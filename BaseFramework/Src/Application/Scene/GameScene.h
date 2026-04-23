@@ -15,5 +15,5 @@ public:
 	//private: 只有类内能访问
 
 private:
-	int test = 0;
+	int test = 1;
 };
