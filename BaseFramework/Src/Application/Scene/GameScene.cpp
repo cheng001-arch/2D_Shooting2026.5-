@@ -1,11 +1,11 @@
 ﻿#include "GameScene.h"
 
-void GameScene::PreUpate()
+void GameScene::PreUpdate()
 {	
 	KdDebugGUI::Instance().AddLog("PreUpdate()\n");
 }
 
-void GameScene::Upate()
+void GameScene::Update()
 {
 	KdDebugGUI::Instance().AddLog("Upate()\n");
 }
