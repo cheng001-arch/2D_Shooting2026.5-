@@ -64,6 +64,30 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	Math::Vector2 move = Math::Vector2::Zero;
+
+	if (GetAsyncKeyState('W') & 0x8000) { move.y -= 1.0f; }
+	if (GetAsyncKeyState('S') & 0x8000) { move.y += 1.0f; }
+	if (GetAsyncKeyState('A') & 0x8000) { move.x -= 1.0f; }
+	if (GetAsyncKeyState('D') & 0x8000) { move.x += 1.0f; }
+
+	if (move.LengthSquared() > 0.0f)
+	{
+		move.Normalize();
+		m_playerPos += move * m_moveSpeed * GetDeltaTime();
+
+		m_animTimer += GetDeltaTime();
+		if (m_animTimer >= m_animInterval)
+		{
+			m_animTimer = 0.0f;
+			m_animFrame = (m_animFrame + 1) % 4;
+		}
+	}
+	else
+	{
+		m_animFrame = 0;
+		m_animTimer = 0.0f;
+	}
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -167,6 +191,16 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		if (m_playerTex.GetSRView())
+		{
+			const int frameWidth = static_cast<int>(m_playerTex.GetWidth() / 4);
+			const int frameHeight = static_cast<int>(m_playerTex.GetHeight());
+			Math::Rectangle srcRect(frameWidth * m_animFrame, 0, frameWidth, frameHeight);
+
+			KdShaderManager::Instance().m_spriteShader.DrawTex(&m_playerTex,
+				static_cast<int>(m_playerPos.x), static_cast<int>(m_playerPos.y),
+				frameWidth, frameHeight, &srcRect);
+		}
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
 }
@@ -246,6 +280,8 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	// 例えばカーソルを消したい場合
 	//ShowCursor(false);//鼠标を消す
+
+	m_playerTex.Load("Asset/Textures/player.png");
 
 	return true;
 }

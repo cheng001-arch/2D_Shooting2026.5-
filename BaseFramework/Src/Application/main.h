@@ -51,6 +51,13 @@ private:
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;
 
+	KdTexture	m_playerTex;
+	Math::Vector2	m_playerPos = { 640.0f, 360.0f };
+	float		m_moveSpeed = 320.0f;
+	int		m_animFrame = 0;
+	float		m_animTimer = 0.0f;
+	float		m_animInterval = 0.12f;
+
 //=====================================================
 // シングルトンパターン
 //=====================================================
