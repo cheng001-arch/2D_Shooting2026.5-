@@ -7,8 +7,8 @@ public:
 	GameScene(){}//生成时调用
 	~GameScene() {}//销毁时调用
 
-	void PreUpate();//更新前处理
-	void Upate();//更新
+	void PreUpdate();//更新前处理
+	void Update();//更新
 	void Draw();//绘制
 	void Init();//初始化
 	void Release();//释放 解放处理
