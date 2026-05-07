@@ -64,6 +64,7 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	m_player.Update();
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -167,6 +168,7 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		m_player.DrawSprite();
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
 }
@@ -245,7 +247,9 @@ bool Application::Init(int w, int h)
 	// ゲーム固有の初期化
 	//===================================================================
 	// 例えばカーソルを消したい場合
+	// // 例如カーソルを消したい場合
 	//ShowCursor(false);//鼠标を消す
+	m_player.Init();
 
 	return true;
 }
