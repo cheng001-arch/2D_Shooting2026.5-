@@ -11,6 +11,7 @@ void Player::Update()
 {
 	Move();
 	Shot();
+	UpdateAnimation();
 
 	for (Bullet& bullet : m_bullets)
 	{
@@ -29,7 +30,7 @@ void Player::DrawSprite() const
 		Math::Matrix mat = Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(m_angleDeg));
 		mat *= Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0.0f);
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
-		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex.get(), 0, 0, 80, 80);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(m_spTex.get(), 0, 0, 80, 80, &m_srcRect);
 	}
 
 	for (const Bullet& bullet : m_bullets)
@@ -69,4 +70,17 @@ void Player::Shot()
 	Bullet newBullet;
 	newBullet.Init(m_pos, m_angleDeg);
 	m_bullets.push_back(newBullet);
+}
+
+void Player::UpdateAnimation()
+{
+	constexpr int burnerAnime[6] = { 0, 64, 128, 192, 128, 64 };
+
+	m_anim += 0.5f;
+	if (m_anim >= 6.0f)
+	{
+		m_anim = 0.0f;
+	}
+
+	m_srcRect = { burnerAnime[(int)m_anim], 0, 64, 64 };
 }
