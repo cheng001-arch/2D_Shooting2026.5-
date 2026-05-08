@@ -53,11 +53,11 @@ void Player::Move()
 	const float rad = DirectX::XMConvertToRadians(m_angleDeg);
 	Math::Vector2 forward = { sinf(rad), -cosf(rad) };
 
-	if (GetAsyncKeyState('W') & 0x8000)
+	if (GetAsyncKeyState('S') & 0x8000)
 	{
 		m_pos += forward * m_moveSpeed;
 	}
-	if (GetAsyncKeyState('S') & 0x8000)
+	if (GetAsyncKeyState('W') & 0x8000)
 	{
 		m_pos -= forward * m_moveSpeed;
 	}
