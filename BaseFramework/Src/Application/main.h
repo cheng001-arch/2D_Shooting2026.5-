@@ -48,6 +48,8 @@ private:
 	// FPSコントローラー
 	KdFPSController	m_fpsController;
 
+	std::shared_ptr<class Turret> m_turret = nullptr;
+
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;
 

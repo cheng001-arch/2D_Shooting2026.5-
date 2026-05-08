@@ -1,5 +1,7 @@
 ﻿#include "main.h"
 
+#include "Application/Object/Turret.h"
+
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
 // アプリケーションはこの関数から進行する
@@ -64,6 +66,10 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	if (m_turret)
+	{
+		m_turret->Update();
+	}
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -167,6 +173,10 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		if (m_turret)
+		{
+			m_turret->DrawSprite();
+		}
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
 }
@@ -246,6 +256,10 @@ bool Application::Init(int w, int h)
 	//===================================================================
 	// 例えばカーソルを消したい場合
 	//ShowCursor(false);//鼠标を消す
+
+	m_turret = std::make_shared<Turret>();
+	m_turret->Init();
+	m_turret->SetPos({ 0.0f, 0.0f });
 
 	return true;
 }
@@ -360,6 +374,8 @@ void Application::Execute()
 // アプリケーション終了
 void Application::Release()
 {
+	m_turret = nullptr;
+
 	KdInputManager::Instance().Release();
 
 	KdShaderManager::Instance().Release();
