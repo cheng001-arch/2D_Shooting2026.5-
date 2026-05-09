@@ -1,5 +1,6 @@
 ﻿#include "main.h"
 
+#include "Application/Object/PlayerPlanet.h"
 #include "Application/Object/Turret.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -173,6 +174,11 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		if (m_playerPlanet)
+		{
+			m_playerPlanet->DrawSprite();
+		}
+
 		if (m_turret)
 		{
 			m_turret->DrawSprite();
@@ -257,9 +263,13 @@ bool Application::Init(int w, int h)
 	// 例えばカーソルを消したい場合
 	//ShowCursor(false);//鼠标を消す
 
+	m_playerPlanet = std::make_shared<PlayerPlanet>();
+	m_playerPlanet->Init();
+	m_playerPlanet->SetPos({ 0.0f, -810.0f });
+
 	m_turret = std::make_shared<Turret>();
 	m_turret->Init();
-	m_turret->SetPos({ 0.0f, 0.0f });
+	m_turret->SetPos({ 0.0f, -232.0f });
 
 	return true;
 }
@@ -375,6 +385,7 @@ void Application::Execute()
 void Application::Release()
 {
 	m_turret = nullptr;
+	m_playerPlanet = nullptr;
 
 	KdInputManager::Instance().Release();
 

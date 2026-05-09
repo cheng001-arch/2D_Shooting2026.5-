@@ -243,6 +243,9 @@
     <ClInclude Include="Src\Application\Object\Player.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\PlayerPlanet.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Object\Bullet.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
@@ -390,6 +393,9 @@
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Player.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\PlayerPlanet.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Bullet.cpp">

@@ -24,7 +24,7 @@ private:
 	std::shared_ptr<KdTexture> m_spTex = nullptr;
 
 	Math::Vector2 m_pos = Math::Vector2::Zero;
-	Math::Vector2 m_size = { 128.0f, 128.0f };
+	Math::Vector2 m_size = { 256.0f, 256.0f };
 
 	float m_angle = 0.0f;
 	float m_angleOffset = DirectX::XMConvertToRadians(-90.0f);

@@ -277,6 +277,7 @@
     <ClInclude Include="Src\Application\Object\Bullet.h" />
     <ClInclude Include="Src\Application\Object\Enemy.h" />
     <ClInclude Include="Src\Application\Object\Player.h" />
+    <ClInclude Include="Src\Application\Object\PlayerPlanet.h" />
     <ClInclude Include="Src\Application\Object\Turret.h" />
     <ClInclude Include="Src\Application\Scene\GameScene.h" />
     <ClInclude Include="Src\Framework\Direct3D\KdMaterial.h" />
@@ -331,6 +332,7 @@
     <ClCompile Include="Src\Application\Object\Bullet.cpp" />
     <ClCompile Include="Src\Application\Object\Enemy.cpp" />
     <ClCompile Include="Src\Application\Object\Player.cpp" />
+    <ClCompile Include="Src\Application\Object\PlayerPlanet.cpp" />
     <ClCompile Include="Src\Application\Object\Turret.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene.cpp" />
     <ClCompile Include="Src\Framework\Direct3D\KdMaterial.cpp">
