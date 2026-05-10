@@ -32,8 +32,10 @@ void EnemyManager::SetProgressSystem(const std::shared_ptr<ProgressSystem>& prog
 
 void EnemyManager::Update(const PlayerPlanet& playerPlanet)
 {
+	m_isPlayerPlanetDead = playerPlanet.GetHp() <= 0;
+
 	const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock();
-	const bool canSpawnEnemy = !progressSystem || !progressSystem->IsComplete();
+	const bool canSpawnEnemy = !m_isPlayerPlanetDead && (!progressSystem || !progressSystem->IsComplete());
 	if (canSpawnEnemy)
 	{
 		m_spawnTimer += Application::Instance().GetDeltaTime();
@@ -78,9 +80,12 @@ void EnemyManager::NotifyEnemyDefeated(const Enemy& enemy)
 {
 	if (enemy.IsComet()) { return; }
 
-	if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
+	if (!m_isPlayerPlanetDead)
 	{
-		progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
+		if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
+		{
+			progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
+		}
 	}
 
 	++m_defeatCountForComet;
@@ -94,6 +99,7 @@ void EnemyManager::NotifyEnemyDefeated(const Enemy& enemy)
 void EnemyManager::NotifyEnemyCrashedIntoPlanet(const Enemy& enemy)
 {
 	if (enemy.IsComet()) { return; }
+	if (m_isPlayerPlanetDead) { return; }
 
 	if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
 	{
@@ -162,7 +168,7 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 		enemy->SetStatus(
 			3,
 			0,
-			50,
+			70,
 			0.0f,
 			{ 120.0f, 120.0f },
 			48.0f);

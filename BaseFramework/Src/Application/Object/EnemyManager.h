@@ -41,6 +41,7 @@ private:
 	float m_spawnInterval = 120.0f;
 	int m_defeatCountForComet = 0;
 	int m_pendingCometCount = 0;
+	bool m_isPlayerPlanetDead = false;
 
 	float m_smallMeteorSpeed = 3.5f;
 	float m_mediumMeteorSpeed = 3.0f;
