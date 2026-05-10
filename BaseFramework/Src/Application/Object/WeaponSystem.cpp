@@ -14,6 +14,16 @@ void WeaponSystem::Init(
 	m_wpHeatRay = heatRay;
 }
 
+void WeaponSystem::Reset()
+{
+	m_currentWeapon = WeaponType::Meteor;
+	m_prevLeftClick = false;
+	m_prevEKey = false;
+	m_meteorShootCoolFrame = 0.0f;
+	m_mimicPlanetAmmo = m_mimicPlanetMaxAmmo;
+	m_mimicPlanetRecoveryFrame = 0.0f;
+}
+
 void WeaponSystem::Update()
 {
 	const float dt = Application::Instance().GetDeltaTime();

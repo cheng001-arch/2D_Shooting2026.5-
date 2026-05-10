@@ -1,4 +1,5 @@
 #include "CollisionSystem.h"
+#include "Application/main.h"
 #include "Application/Object/EnergySystem.h"
 #include "Application/Object/Enemy.h"
 #include "Application/Object/EnemyManager.h"
@@ -36,9 +37,11 @@ void CollisionSystem::HitProjectilesToEnemies(ProjectileManager& projectileManag
 			explosionManager.Spawn(explosionPos);
 
 			const bool wasAlive = !enemy->IsExpired();
+			Application::Instance().AddResultDamage(static_cast<float>(projectile.attackPower));
 			enemy->Damage(static_cast<float>(projectile.attackPower));
 			if (wasAlive && enemy->IsExpired())
 			{
+				Application::Instance().AddResultKill();
 				enemyManager.NotifyEnemyDefeated(*enemy);
 				energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
 			}
@@ -64,6 +67,7 @@ void CollisionSystem::HitEnemiesToPlayerPlanet(EnemyManager& enemyManager, Playe
 
 		explosionManager.SpawnPlanetHit(enemy->GetPos2D(), enemy->GetRadius());
 		enemyManager.NotifyEnemyCrashedIntoPlanet(*enemy);
+		Application::Instance().AddResultMiss();
 		playerPlanet.Damage(enemy->GetAttackPower());
 		turret.ShakeDamage();
 		enemy->Damage(999);

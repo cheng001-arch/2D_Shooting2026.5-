@@ -25,6 +25,15 @@ void EnemyManager::Init()
 	m_spGravityTrailTex->Load("Asset/Textures/weiba.png");
 }
 
+void EnemyManager::Reset()
+{
+	m_enemies.clear();
+	m_spawnTimer = 0.0f;
+	m_defeatCountForComet = 0;
+	m_pendingCometCount = 0;
+	m_isPlayerPlanetDead = false;
+}
+
 void EnemyManager::SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem)
 {
 	m_wpProgressSystem = progressSystem;

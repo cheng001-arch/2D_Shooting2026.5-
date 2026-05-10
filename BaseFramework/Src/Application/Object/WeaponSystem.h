@@ -11,6 +11,7 @@ public:
 		const std::shared_ptr<Turret>& turret,
 		const std::shared_ptr<ProjectileManager>& projectileManager,
 		const std::shared_ptr<HeatRay>& heatRay);
+	void Reset();
 	void Update();
 
 	enum class WeaponType

@@ -23,6 +23,17 @@ void BlackHole::Init(
 	m_spTex->Load("Asset/Textures/heidong4.png");
 }
 
+void BlackHole::Reset()
+{
+	ReleaseCapturedEnemies();
+	m_enemyCenterTimers.clear();
+	m_projectileCenterTimers.clear();
+	m_lifeFrame = 0.0f;
+	m_anime = 0.0f;
+	m_isActive = false;
+	m_prevRKey = false;
+}
+
 void BlackHole::Update()
 {
 	const bool rKey = (GetAsyncKeyState('R') & 0x8000) != 0;
@@ -152,6 +163,7 @@ void BlackHole::PullEnemies()
 			timer += dt;
 			if (timer >= m_absorbDelayFrame)
 			{
+				Application::Instance().AddResultKill();
 				enemy->Damage(9999.0f);
 			}
 		}

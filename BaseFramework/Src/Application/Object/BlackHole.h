@@ -16,6 +16,7 @@ public:
 		const std::shared_ptr<UIManager>& uiManager,
 		const std::shared_ptr<EnemyManager>& enemyManager,
 		const std::shared_ptr<ProjectileManager>& projectileManager);
+	void Reset();
 	void Update();
 	void DrawSprite();
 

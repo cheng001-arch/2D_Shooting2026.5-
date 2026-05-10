@@ -4,6 +4,7 @@ class EnergySystem
 {
 public:
 	void Init();
+	void Reset();
 	void Update();
 
 	void AddEnergy(float value);

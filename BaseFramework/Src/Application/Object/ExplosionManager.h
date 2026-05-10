@@ -4,6 +4,7 @@ class ExplosionManager
 {
 public:
 	void Init();
+	void Reset();
 	void Update();
 	void DrawSprite();
 	void Spawn(const Math::Vector2& pos);

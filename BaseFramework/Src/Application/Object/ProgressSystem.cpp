@@ -19,6 +19,14 @@ void ProgressSystem::Init()
 	m_spYesTex->Load("Asset/Textures/yes.png");
 }
 
+void ProgressSystem::Reset()
+{
+	m_progress = 0;
+	m_completeWaitFrame = 0.0f;
+	m_yesAnimFrame = 0.0f;
+	m_yesAnimStarted = false;
+}
+
 void ProgressSystem::Update()
 {
 	if ((GetAsyncKeyState('P') & 0x8000) && !IsComplete())

@@ -21,6 +21,9 @@ public:
 	int		GetNowFPS()			const	{ return m_fpsController.m_nowfps; }
 	int		GetMaxFPS()			const	{ return m_fpsController.m_maxFps; }
 	float	GetDeltaTime()		const	{ return m_fpsController.GetDeltaTime(); }
+	void	AddResultKill(int value = 1);
+	void	AddResultMiss(int value = 1);
+	void	AddResultDamage(float value);
 private:
 
 	void KdBeginUpdate();
@@ -41,6 +44,7 @@ private:
 
 	// アプリケーション解放
 	void Release();
+	void ResetStageState();
 
 	// ゲームウィンドウクラス
 	KdWindow		m_window;
@@ -60,10 +64,16 @@ private:
 	std::shared_ptr<class EnergySystem> m_energySystem = nullptr;
 	std::shared_ptr<class ExplosionManager> m_explosionManager = nullptr;
 	std::shared_ptr<class UIManager> m_uiManager = nullptr;
+	std::shared_ptr<class SceneManager> m_sceneManager = nullptr;
 	std::shared_ptr<KdTexture> m_backgroundTex = nullptr;
 
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;
+	bool		m_isCursorVisible = false;
+	bool		m_isStageRunning = false;
+	bool		m_isResultWaiting = false;
+	float		m_resultWaitFrame = 0.0f;
+	float		m_resultWaitDuration = 480.0f;
 
 //=====================================================
 // シングルトンパターン

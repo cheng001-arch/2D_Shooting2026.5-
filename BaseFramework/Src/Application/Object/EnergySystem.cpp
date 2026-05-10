@@ -8,6 +8,11 @@ void EnergySystem::Init()
 	m_energy = 0.0f;
 }
 
+void EnergySystem::Reset()
+{
+	m_energy = 0.0f;
+}
+
 void EnergySystem::Update()
 {
 	AddEnergy((m_recoveryPerSecond / 60.0f) * Application::Instance().GetDeltaTime());

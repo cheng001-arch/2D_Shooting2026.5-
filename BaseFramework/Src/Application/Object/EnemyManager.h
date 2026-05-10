@@ -8,6 +8,7 @@ class EnemyManager
 {
 public:
 	void Init();
+	void Reset();
 	void SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem);
 	void Update(const PlayerPlanet& playerPlanet);
 	void DrawSprite();

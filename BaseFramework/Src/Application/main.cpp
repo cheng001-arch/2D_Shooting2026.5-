@@ -12,6 +12,7 @@
 #include "Application/Object/Turret.h"
 #include "Application/Object/UIManager.h"
 #include "Application/Object/WeaponSystem.h"
+#include "Application/Scene/SceneManager.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
@@ -77,6 +78,38 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	if (m_sceneManager)
+	{
+		const bool shouldShowCursor = !m_sceneManager->IsGameScene();
+		if (m_isCursorVisible != shouldShowCursor)
+		{
+			ShowCursor(shouldShowCursor);
+			m_isCursorVisible = shouldShowCursor;
+		}
+		m_sceneManager->Update();
+		if (m_sceneManager->IsGameScene() && !m_isStageRunning)
+		{
+			ResetStageState();
+			m_sceneManager->ResetResultStats();
+			m_isStageRunning = true;
+			m_isResultWaiting = false;
+			m_resultWaitFrame = 0.0f;
+		}
+		else if (!m_sceneManager->IsGameScene() && !m_sceneManager->IsPauseScene())
+		{
+			m_isStageRunning = false;
+		}
+		if (!m_sceneManager->IsGameScene())
+		{
+			return;
+		}
+	}
+
+	if (m_sceneManager && !m_isResultWaiting)
+	{
+		m_sceneManager->AddResultTime(Application::Instance().GetDeltaTime() / 60.0f);
+	}
+
 	if (m_playerPlanet && (GetAsyncKeyState('O') & 0x8000))
 	{
 		m_playerPlanet->ResetHp();
@@ -125,6 +158,90 @@ void Application::Update()
 	if (m_uiManager)
 	{
 		m_uiManager->Update();
+	}
+
+	const bool isStageClear = m_progressSystem && m_progressSystem->IsComplete();
+	const bool isPlayerDead = m_playerPlanet && m_playerPlanet->GetHp() <= 0;
+	if (m_sceneManager && (isStageClear || isPlayerDead))
+	{
+		m_isResultWaiting = true;
+		m_resultWaitFrame += Application::Instance().GetDeltaTime();
+		if (m_resultWaitFrame >= m_resultWaitDuration)
+		{
+			m_sceneManager->StartResultScene();
+		}
+	}
+}
+
+void Application::AddResultKill(int value)
+{
+	if (m_sceneManager && m_isStageRunning && !m_isResultWaiting)
+	{
+		m_sceneManager->AddResultKill(value);
+	}
+}
+
+void Application::AddResultMiss(int value)
+{
+	if (m_sceneManager && m_isStageRunning && !m_isResultWaiting)
+	{
+		m_sceneManager->AddResultMiss(value);
+	}
+}
+
+void Application::AddResultDamage(float value)
+{
+	if (m_sceneManager && m_isStageRunning && !m_isResultWaiting)
+	{
+		m_sceneManager->AddResultDamage(value);
+	}
+}
+
+void Application::ResetStageState()
+{
+	if (m_playerPlanet)
+	{
+		m_playerPlanet->ResetHp();
+	}
+
+	if (m_progressSystem)
+	{
+		m_progressSystem->Reset();
+	}
+
+	if (m_enemyManager)
+	{
+		m_enemyManager->Reset();
+	}
+
+	if (m_projectileManager)
+	{
+		m_projectileManager->WorkProjectiles().clear();
+	}
+
+	if (m_energySystem)
+	{
+		m_energySystem->Reset();
+	}
+
+	if (m_explosionManager)
+	{
+		m_explosionManager->Reset();
+	}
+
+	if (m_heatRay)
+	{
+		m_heatRay->Reset();
+	}
+
+	if (m_weaponSystem)
+	{
+		m_weaponSystem->Reset();
+	}
+
+	if (m_blackHole)
+	{
+		m_blackHole->Reset();
 	}
 }
 
@@ -229,6 +346,13 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		if (m_sceneManager && !m_sceneManager->IsGameScene())
+		{
+			m_sceneManager->DrawSprite();
+			KdShaderManager::Instance().m_spriteShader.End();
+			return;
+		}
+
 		if (m_backgroundTex)
 		{
 			KdShaderManager::Instance().m_spriteShader.DrawTex(
@@ -362,7 +486,8 @@ bool Application::Init(int w, int h)
 	// ゲーム固有の初期化
 	//===================================================================
 	// 例えばカーソルを消したい場合
-	ShowCursor(false);//鼠标を消す
+	ShowCursor(true);
+	m_isCursorVisible = true;
 
 	m_backgroundTex = std::make_shared<KdTexture>();
 	m_backgroundTex->Load("Asset/Textures/yuzhoubeijing.png");
@@ -404,6 +529,9 @@ bool Application::Init(int w, int h)
 
 	m_blackHole = std::make_shared<BlackHole>();
 	m_blackHole->Init(m_energySystem, m_uiManager, m_enemyManager, m_projectileManager);
+
+	m_sceneManager = std::make_shared<SceneManager>();
+	m_sceneManager->Init();
 
 	return true;
 }
@@ -457,7 +585,7 @@ void Application::Execute()
 			break;
 		}
 
-		if (GetAsyncKeyState(VK_ESCAPE))
+		if (GetAsyncKeyState(VK_ESCAPE) && (!m_sceneManager || m_sceneManager->IsTitleScene()))
 		{
 //			if (MessageBoxA(m_window.GetWndHandle(), "本当にゲームを終了しますか？",
 //				"終了確認", MB_YESNO | MB_ICONQUESTION | MB_DEFBUTTON2) == IDYES)
@@ -518,6 +646,7 @@ void Application::Execute()
 // アプリケーション終了
 void Application::Release()
 {
+	m_sceneManager = nullptr;
 	m_uiManager = nullptr;
 	m_blackHole = nullptr;
 	m_progressSystem = nullptr;

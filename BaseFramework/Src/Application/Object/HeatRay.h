@@ -13,6 +13,7 @@ public:
 		const std::shared_ptr<Turret>& turret,
 		const std::shared_ptr<EnemyManager>& enemyManager,
 		const std::shared_ptr<EnergySystem>& energySystem);
+	void Reset();
 	void Update(bool wantsFire);
 	void DrawSprite();
 

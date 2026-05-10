@@ -15,6 +15,11 @@ void ExplosionManager::Init()
 	m_spPlanetHitAccentTex->Load("Asset/Textures/baozha3.png");
 }
 
+void ExplosionManager::Reset()
+{
+	m_explosions.clear();
+}
+
 void ExplosionManager::Update()
 {
 	const float addFrame = m_animFps / 60.0f * Application::Instance().GetDeltaTime();

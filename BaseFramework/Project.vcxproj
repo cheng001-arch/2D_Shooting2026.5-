@@ -290,6 +290,11 @@
     <ClInclude Include="Src\Application\Object\UIManager.h" />
     <ClInclude Include="Src\Application\Object\WeaponSystem.h" />
     <ClInclude Include="Src\Application\Scene\GameScene.h" />
+    <ClInclude Include="Src\Application\Scene\PauseScene.h" />
+    <ClInclude Include="Src\Application\Scene\ResultScene.h" />
+    <ClInclude Include="Src\Application\Scene\SceneManager.h" />
+    <ClInclude Include="Src\Application\Scene\StageSelectScene.h" />
+    <ClInclude Include="Src\Application\Scene\TitleScene.h" />
     <ClInclude Include="Src\Framework\Direct3D\KdMaterial.h" />
     <ClInclude Include="Src\Framework\Direct3D\Polygon\KdPolygon.h" />
     <ClInclude Include="Src\Framework\Direct3D\Polygon\KdSquarePolygon.h" />
@@ -355,6 +360,11 @@
     <ClCompile Include="Src\Application\Object\UIManager.cpp" />
     <ClCompile Include="Src\Application\Object\WeaponSystem.cpp" />
     <ClCompile Include="Src\Application\Scene\GameScene.cpp" />
+    <ClCompile Include="Src\Application\Scene\PauseScene.cpp" />
+    <ClCompile Include="Src\Application\Scene\ResultScene.cpp" />
+    <ClCompile Include="Src\Application\Scene\SceneManager.cpp" />
+    <ClCompile Include="Src\Application\Scene\StageSelectScene.cpp" />
+    <ClCompile Include="Src\Application\Scene\TitleScene.cpp" />
     <ClCompile Include="Src\Framework\Direct3D\KdMaterial.cpp">
       <SubType>
       </SubType>

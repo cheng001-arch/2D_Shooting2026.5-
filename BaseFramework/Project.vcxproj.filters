@@ -237,6 +237,21 @@
     <ClInclude Include="Src\Application\Scene\GameScene.h">
       <Filter>Src\Application\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Scene\PauseScene.h">
+      <Filter>Src\Application\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Scene\ResultScene.h">
+      <Filter>Src\Application\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Scene\SceneManager.h">
+      <Filter>Src\Application\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Scene\StageSelectScene.h">
+      <Filter>Src\Application\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Scene\TitleScene.h">
+      <Filter>Src\Application\Scene</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Object\Enemy.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
@@ -417,6 +432,21 @@
       <Filter>Src\Framework\Utility\KdDebug</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Scene\GameScene.cpp">
+      <Filter>Src\Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\PauseScene.cpp">
+      <Filter>Src\Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\ResultScene.cpp">
+      <Filter>Src\Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\SceneManager.cpp">
+      <Filter>Src\Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\StageSelectScene.cpp">
+      <Filter>Src\Application\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Scene\TitleScene.cpp">
       <Filter>Src\Application\Scene</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Enemy.cpp">

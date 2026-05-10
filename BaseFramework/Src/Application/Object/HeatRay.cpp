@@ -21,6 +21,20 @@ void HeatRay::Init(
 	m_spTex->Load("Asset/Textures/lizi.png");
 }
 
+void HeatRay::Reset()
+{
+	m_damageTimers.clear();
+	m_heat = 0.0f;
+	m_fireChargeFrame = 0.0f;
+	m_overheatCoolFrame = 0.0f;
+	m_currentRayLength = 0.0f;
+	m_dissolveStartLength = 0.0f;
+	m_particleScroll = 0.0f;
+	m_isFiring = false;
+	m_isOverheated = false;
+	m_isDissolving = false;
+}
+
 void HeatRay::Update(bool wantsFire)
 {
 	const float dt = Application::Instance().GetDeltaTime();
@@ -175,10 +189,12 @@ void HeatRay::HitEnemies()
 		auto timerItr = m_damageTimers.find(enemyKey);
 		if (timerItr == m_damageTimers.end())
 		{
+			Application::Instance().AddResultDamage(m_damagePower);
 			enemy->Damage(m_damagePower);
 
 			if (enemy->IsExpired())
 			{
+				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
 				m_damageTimers.erase(enemyKey);
@@ -194,10 +210,12 @@ void HeatRay::HitEnemies()
 		while (timer >= m_damageInterval && !enemy->IsExpired())
 		{
 			timer -= m_damageInterval;
+			Application::Instance().AddResultDamage(m_damagePower);
 			enemy->Damage(m_damagePower);
 
 			if (enemy->IsExpired())
 			{
+				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
 				m_damageTimers.erase(enemyKey);

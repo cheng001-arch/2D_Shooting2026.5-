@@ -4,6 +4,7 @@ class ProgressSystem
 {
 public:
 	void Init();
+	void Reset();
 	void Update();
 	void DrawSprite();
 	void AddEnemyProgress(int value);
