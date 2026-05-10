@@ -1,4 +1,8 @@
 #include "PlayerPlanet.h"
+#include "Application/main.h"
+
+#include <algorithm>
+#include <cmath>
 
 void PlayerPlanet::Init()
 {
@@ -14,9 +18,20 @@ void PlayerPlanet::DrawSprite()
 {
 	if (!m_spTex) { return; }
 
+	Math::Vector2 drawPos = m_pos;
+	float shakeAngle = 0.0f;
+	if (m_damageShakeFrame > 0.0f)
+	{
+		const float shakeRate = m_damageShakeFrame / m_damageShakeDuration;
+		shakeAngle = std::sin(m_damageShakeFrame * 1.4f) * DirectX::XMConvertToRadians(m_damageShakeAngle) * shakeRate;
+		drawPos.x += std::sin(m_damageShakeFrame * 2.5f) * m_damageShakePowerX * shakeRate;
+		drawPos.y += std::cos(m_damageShakeFrame * 3.2f) * m_damageShakePowerY * shakeRate;
+		m_damageShakeFrame = std::max(0.0f, m_damageShakeFrame - Application::Instance().GetDeltaTime());
+	}
+
 	Math::Matrix mat =
-		Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180.0f)) *
-		Math::Matrix::CreateTranslation(m_pos.x, m_pos.y, 0.0f);
+		Math::Matrix::CreateRotationZ(DirectX::XMConvertToRadians(180.0f) + shakeAngle) *
+		Math::Matrix::CreateTranslation(drawPos.x, drawPos.y, 0.0f);
 
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(
@@ -42,4 +57,28 @@ void PlayerPlanet::SetPos(const Math::Vector3& pos)
 Math::Vector2 PlayerPlanet::GetTopPos() const
 {
 	return { m_pos.x, m_pos.y + m_size.y * 0.5f };
+}
+
+void PlayerPlanet::ResetHp()
+{
+	m_hp = 20;
+	m_isExpired = false;
+}
+
+void PlayerPlanet::Damage(int damage)
+{
+	ShakeDamage();
+
+	m_hp -= damage;
+
+	if (m_hp <= 0)
+	{
+		m_hp = 0;
+		m_isExpired = true;
+	}
+}
+
+void PlayerPlanet::ShakeDamage()
+{
+	m_damageShakeFrame = m_damageShakeDuration;
 }

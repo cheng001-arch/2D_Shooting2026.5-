@@ -50,6 +50,16 @@ private:
 
 	std::shared_ptr<class PlayerPlanet> m_playerPlanet = nullptr;
 	std::shared_ptr<class Turret> m_turret = nullptr;
+	std::shared_ptr<class ProjectileManager> m_projectileManager = nullptr;
+	std::shared_ptr<class HeatRay> m_heatRay = nullptr;
+	std::shared_ptr<class WeaponSystem> m_weaponSystem = nullptr;
+	std::shared_ptr<class BlackHole> m_blackHole = nullptr;
+	std::shared_ptr<class EnemyManager> m_enemyManager = nullptr;
+	std::shared_ptr<class CollisionSystem> m_collisionSystem = nullptr;
+	std::shared_ptr<class EnergySystem> m_energySystem = nullptr;
+	std::shared_ptr<class ExplosionManager> m_explosionManager = nullptr;
+	std::shared_ptr<class UIManager> m_uiManager = nullptr;
+	std::shared_ptr<KdTexture> m_backgroundTex = nullptr;
 
 	// ゲーム終了フラグ trueで終了する
 	bool		m_endFlag = false;

@@ -240,16 +240,43 @@
     <ClInclude Include="Src\Application\Object\Enemy.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\BlackHole.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\EnemyManager.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\ExplosionManager.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\CollisionSystem.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\EnergySystem.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\HeatRay.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Object\Player.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\Object\PlayerPlanet.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\ProjectileManager.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Object\Bullet.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
     <ClInclude Include="Src\Application\Object\Turret.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\WeaponSystem.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\UIManager.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
   </ItemGroup>
@@ -392,16 +419,43 @@
     <ClCompile Include="Src\Application\Object\Enemy.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Application\Object\BlackHole.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\EnemyManager.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\ExplosionManager.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\CollisionSystem.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\EnergySystem.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\HeatRay.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Application\Object\Player.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\PlayerPlanet.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Application\Object\ProjectileManager.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
     <ClCompile Include="Src\Application\Object\Bullet.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Turret.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\WeaponSystem.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\UIManager.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
   </ItemGroup>

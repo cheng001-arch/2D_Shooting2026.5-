@@ -1,7 +1,16 @@
 ﻿#include "main.h"
 
+#include "Application/Object/BlackHole.h"
+#include "Application/Object/CollisionSystem.h"
+#include "Application/Object/EnergySystem.h"
+#include "Application/Object/EnemyManager.h"
+#include "Application/Object/ExplosionManager.h"
+#include "Application/Object/HeatRay.h"
 #include "Application/Object/PlayerPlanet.h"
+#include "Application/Object/ProjectileManager.h"
 #include "Application/Object/Turret.h"
+#include "Application/Object/UIManager.h"
+#include "Application/Object/WeaponSystem.h"
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
@@ -67,9 +76,49 @@ void Application::PreUpdate()
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::Update()
 {
+	if (m_playerPlanet && (GetAsyncKeyState('O') & 0x8000))
+	{
+		m_playerPlanet->ResetHp();
+	}
+
 	if (m_turret)
 	{
 		m_turret->Update();
+	}
+
+	if (m_weaponSystem)
+	{
+		m_weaponSystem->Update();
+	}
+
+	if (m_blackHole)
+	{
+		m_blackHole->Update();
+	}
+
+	if (m_enemyManager && m_playerPlanet)
+	{
+		m_enemyManager->Update(*m_playerPlanet);
+	}
+
+	if (m_energySystem)
+	{
+		m_energySystem->Update();
+	}
+
+	if (m_collisionSystem && m_projectileManager && m_enemyManager && m_playerPlanet && m_turret && m_energySystem && m_explosionManager)
+	{
+		m_collisionSystem->Update(*m_projectileManager, *m_enemyManager, *m_playerPlanet, *m_turret, *m_energySystem, *m_explosionManager);
+	}
+
+	if (m_explosionManager)
+	{
+		m_explosionManager->Update();
+	}
+
+	if (m_uiManager)
+	{
+		m_uiManager->Update();
 	}
 }
 
@@ -174,6 +223,16 @@ void Application::DrawSprite()
 	// 2Dの描画はこの間で行う
 	KdShaderManager::Instance().m_spriteShader.Begin();
 	{
+		if (m_backgroundTex)
+		{
+			KdShaderManager::Instance().m_spriteShader.DrawTex(
+				m_backgroundTex.get(),
+				0,
+				0,
+				1280,
+				720);
+		}
+
 		if (m_playerPlanet)
 		{
 			m_playerPlanet->DrawSprite();
@@ -182,6 +241,36 @@ void Application::DrawSprite()
 		if (m_turret)
 		{
 			m_turret->DrawSprite();
+		}
+
+		if (m_enemyManager)
+		{
+			m_enemyManager->DrawSprite();
+		}
+
+		if (m_projectileManager)
+		{
+			m_projectileManager->DrawSprite();
+		}
+
+		if (m_explosionManager)
+		{
+			m_explosionManager->DrawSprite();
+		}
+
+		if (m_heatRay)
+		{
+			m_heatRay->DrawSprite();
+		}
+
+		if (m_blackHole)
+		{
+			m_blackHole->DrawSprite();
+		}
+
+		if (m_uiManager)
+		{
+			m_uiManager->DrawSprite();
 		}
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
@@ -261,7 +350,10 @@ bool Application::Init(int w, int h)
 	// ゲーム固有の初期化
 	//===================================================================
 	// 例えばカーソルを消したい場合
-	//ShowCursor(false);//鼠标を消す
+	ShowCursor(false);//鼠标を消す
+
+	m_backgroundTex = std::make_shared<KdTexture>();
+	m_backgroundTex->Load("Asset/Textures/yuzhoubeijing.png");
 
 	m_playerPlanet = std::make_shared<PlayerPlanet>();
 	m_playerPlanet->Init();
@@ -270,6 +362,32 @@ bool Application::Init(int w, int h)
 	m_turret = std::make_shared<Turret>();
 	m_turret->Init();
 	m_turret->SetPos({ 0.0f, -232.0f });
+
+	m_projectileManager = std::make_shared<ProjectileManager>();
+	m_projectileManager->Init();
+
+	m_enemyManager = std::make_shared<EnemyManager>();
+	m_enemyManager->Init();
+
+	m_collisionSystem = std::make_shared<CollisionSystem>();
+
+	m_energySystem = std::make_shared<EnergySystem>();
+	m_energySystem->Init();
+
+	m_explosionManager = std::make_shared<ExplosionManager>();
+	m_explosionManager->Init();
+
+	m_heatRay = std::make_shared<HeatRay>();
+	m_heatRay->Init(m_turret, m_enemyManager, m_energySystem);
+
+	m_weaponSystem = std::make_shared<WeaponSystem>();
+	m_weaponSystem->Init(m_turret, m_projectileManager, m_heatRay);
+
+	m_uiManager = std::make_shared<UIManager>();
+	m_uiManager->Init(m_playerPlanet, m_energySystem, m_weaponSystem, m_heatRay);
+
+	m_blackHole = std::make_shared<BlackHole>();
+	m_blackHole->Init(m_energySystem, m_uiManager, m_enemyManager, m_projectileManager);
 
 	return true;
 }
@@ -384,6 +502,16 @@ void Application::Execute()
 // アプリケーション終了
 void Application::Release()
 {
+	m_uiManager = nullptr;
+	m_blackHole = nullptr;
+	m_explosionManager = nullptr;
+	m_energySystem = nullptr;
+	m_backgroundTex = nullptr;
+	m_collisionSystem = nullptr;
+	m_enemyManager = nullptr;
+	m_weaponSystem = nullptr;
+	m_heatRay = nullptr;
+	m_projectileManager = nullptr;
 	m_turret = nullptr;
 	m_playerPlanet = nullptr;
 
