@@ -21,6 +21,9 @@ void EnemyManager::Init()
 	m_spCometTex = std::make_shared<KdTexture>();
 	m_spCometTex->Load("Asset/Textures/huixing.png");
 
+	m_spStage8SpecialTex = std::make_shared<KdTexture>();
+	m_spStage8SpecialTex->Load("Asset/Textures/lansexingqiu.png");
+
 	m_spGravityTrailTex = std::make_shared<KdTexture>();
 	m_spGravityTrailTex->Load("Asset/Textures/weiba.png");
 }
@@ -31,6 +34,7 @@ void EnemyManager::Reset()
 	m_spawnTimer = 0.0f;
 	m_defeatCountForComet = 0;
 	m_pendingCometCount = 0;
+	m_stage8SpecialSpawnCount = 0;
 	m_isPlayerPlanetDead = false;
 }
 
@@ -38,6 +42,7 @@ void EnemyManager::SetStageNo(int stageNo)
 {
 	m_stageNo = stageNo;
 	m_isCometBonusStage = m_stageNo == 5;
+	m_isStage8SpecialStage = m_stageNo == 8;
 }
 
 void EnemyManager::SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem)
@@ -74,6 +79,8 @@ void EnemyManager::Update(const PlayerPlanet& playerPlanet)
 				SpawnComet();
 			}
 		}
+
+		TrySpawnStage8SpecialEnemy();
 	}
 	else
 	{
@@ -187,9 +194,40 @@ void EnemyManager::SpawnComet()
 	m_enemies.push_back(enemy);
 }
 
+void EnemyManager::SpawnStage8SpecialEnemy()
+{
+	static std::mt19937 randEngine{ std::random_device{}() };
+	static std::uniform_real_distribution<float> spawnXDist(-480.0f, 480.0f);
+
+	std::shared_ptr<Enemy> enemy = std::make_shared<Enemy>();
+	enemy->Init();
+	SetupEnemyByType(enemy, EnemyType::Stage8Special);
+	enemy->SetPos({ spawnXDist(randEngine), 470.0f });
+
+	m_enemies.push_back(enemy);
+}
+
+void EnemyManager::TrySpawnStage8SpecialEnemy()
+{
+	if (!m_isStage8SpecialStage || m_stage8SpecialSpawnCount >= 2) { return; }
+
+	const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock();
+	if (!progressSystem) { return; }
+
+	const int spawnThresholds[2] = { 30, 70 };
+	while (m_stage8SpecialSpawnCount < 2 &&
+		progressSystem->GetProgress() >= spawnThresholds[m_stage8SpecialSpawnCount])
+	{
+		SpawnStage8SpecialEnemy();
+		++m_stage8SpecialSpawnCount;
+	}
+}
+
 void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyType type)
 {
 	if (!enemy) { return; }
+
+	const int attackBonus = GetStageAttackBonus();
 
 	switch (type)
 	{
@@ -208,7 +246,7 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 		enemy->SetGravityTrailTexture(m_spGravityTrailTex);
 		enemy->SetStatus(
 			2,
-			2,
+			2 + attackBonus,
 			2,
 			m_mediumMeteorSpeed,
 			{ 120.0f, 120.0f },
@@ -219,11 +257,22 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 		enemy->SetGravityTrailTexture(m_spGravityTrailTex);
 		enemy->SetStatus(
 			8,
-			4,
+			4 + attackBonus,
 			4,
 			m_largeMeteorSpeed,
 			{ 320.0f, 320.0f },
 			96.0f);
+		break;
+	case EnemyType::Stage8Special:
+		enemy->SetTexture(m_spStage8SpecialTex);
+		enemy->SetGravityTrailTexture(m_spGravityTrailTex);
+		enemy->SetStatus(
+			12,
+			4 + attackBonus,
+			8,
+			m_stage8SpecialSpeed,
+			{ 420.0f, 420.0f },
+			130.0f);
 		break;
 	case EnemyType::Small:
 	default:
@@ -231,11 +280,16 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 		enemy->SetGravityTrailTexture(m_spGravityTrailTex);
 		enemy->SetStatus(
 			1,
-			1,
+			1 + attackBonus,
 			1,
 			m_smallMeteorSpeed,
 			{ 80.0f, 80.0f },
 			32.0f);
 		break;
 	}
+}
+
+int EnemyManager::GetStageAttackBonus() const
+{
+	return std::max(0, m_stageNo - 1);
 }

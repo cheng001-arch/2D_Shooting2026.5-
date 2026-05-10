@@ -24,17 +24,22 @@ private:
 		Small,
 		Medium,
 		Large,
-		Comet
+		Comet,
+		Stage8Special
 	};
 
 	void SpawnEnemy();
 	void SpawnComet();
+	void SpawnStage8SpecialEnemy();
+	void TrySpawnStage8SpecialEnemy();
 	void SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyType type);
+	int GetStageAttackBonus() const;
 
 	std::shared_ptr<KdTexture> m_spSmallMeteorTex = nullptr;
 	std::shared_ptr<KdTexture> m_spMediumMeteorTex = nullptr;
 	std::shared_ptr<KdTexture> m_spLargeMeteorTex = nullptr;
 	std::shared_ptr<KdTexture> m_spCometTex = nullptr;
+	std::shared_ptr<KdTexture> m_spStage8SpecialTex = nullptr;
 	std::shared_ptr<KdTexture> m_spGravityTrailTex = nullptr;
 	std::weak_ptr<ProgressSystem> m_wpProgressSystem;
 	std::vector<std::shared_ptr<Enemy>> m_enemies;
@@ -44,12 +49,15 @@ private:
 	int m_defeatCountForComet = 0;
 	int m_pendingCometCount = 0;
 	int m_stageNo = 1;
+	int m_stage8SpecialSpawnCount = 0;
 	bool m_isPlayerPlanetDead = false;
 	bool m_isCometBonusStage = false;
+	bool m_isStage8SpecialStage = false;
 
 	float m_smallMeteorSpeed = 3.5f;
 	float m_mediumMeteorSpeed = 3.0f;
 	float m_largeMeteorSpeed = 2.5f;
+	float m_stage8SpecialSpeed = 0.8f;
 	float m_cometPathSpeed = 0.006f;
 	float m_cometBonusSpawnInterval = 45.0f;
 	int m_cometBonusProgress = 5;
