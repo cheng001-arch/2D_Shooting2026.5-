@@ -7,6 +7,7 @@
 #include "Application/Object/ExplosionManager.h"
 #include "Application/Object/HeatRay.h"
 #include "Application/Object/PlayerPlanet.h"
+#include "Application/Object/ProgressSystem.h"
 #include "Application/Object/ProjectileManager.h"
 #include "Application/Object/Turret.h"
 #include "Application/Object/UIManager.h"
@@ -94,6 +95,11 @@ void Application::Update()
 	if (m_blackHole)
 	{
 		m_blackHole->Update();
+	}
+
+	if (m_progressSystem)
+	{
+		m_progressSystem->Update();
 	}
 
 	if (m_enemyManager && m_playerPlanet)
@@ -272,6 +278,11 @@ void Application::DrawSprite()
 		{
 			m_uiManager->DrawSprite();
 		}
+
+		if (m_progressSystem)
+		{
+			m_progressSystem->DrawSprite();
+		}
 	}
 	KdShaderManager::Instance().m_spriteShader.End();
 }
@@ -345,6 +356,7 @@ bool Application::Init(int w, int h)
 	// フォント初期化
 	//===================================================================
 	KdFontManager::Instance().Init(GetWindowHandle());
+	KdFontManager::Instance().AddFont(0, "Arial", 32);
 	
 	//===================================================================
 	// ゲーム固有の初期化
@@ -366,8 +378,12 @@ bool Application::Init(int w, int h)
 	m_projectileManager = std::make_shared<ProjectileManager>();
 	m_projectileManager->Init();
 
+	m_progressSystem = std::make_shared<ProgressSystem>();
+	m_progressSystem->Init();
+
 	m_enemyManager = std::make_shared<EnemyManager>();
 	m_enemyManager->Init();
+	m_enemyManager->SetProgressSystem(m_progressSystem);
 
 	m_collisionSystem = std::make_shared<CollisionSystem>();
 
@@ -504,6 +520,7 @@ void Application::Release()
 {
 	m_uiManager = nullptr;
 	m_blackHole = nullptr;
+	m_progressSystem = nullptr;
 	m_explosionManager = nullptr;
 	m_energySystem = nullptr;
 	m_backgroundTex = nullptr;

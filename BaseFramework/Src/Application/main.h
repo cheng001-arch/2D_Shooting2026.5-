@@ -54,6 +54,7 @@ private:
 	std::shared_ptr<class HeatRay> m_heatRay = nullptr;
 	std::shared_ptr<class WeaponSystem> m_weaponSystem = nullptr;
 	std::shared_ptr<class BlackHole> m_blackHole = nullptr;
+	std::shared_ptr<class ProgressSystem> m_progressSystem = nullptr;
 	std::shared_ptr<class EnemyManager> m_enemyManager = nullptr;
 	std::shared_ptr<class CollisionSystem> m_collisionSystem = nullptr;
 	std::shared_ptr<class EnergySystem> m_energySystem = nullptr;

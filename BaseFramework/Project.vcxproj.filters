@@ -264,6 +264,9 @@
     <ClInclude Include="Src\Application\Object\PlayerPlanet.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\ProgressSystem.h">
+      <Filter>Src\Application\Object</Filter>
+    </ClInclude>
     <ClInclude Include="Src\Application\Object\ProjectileManager.h">
       <Filter>Src\Application\Object</Filter>
     </ClInclude>
@@ -441,6 +444,9 @@
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\PlayerPlanet.cpp">
+      <Filter>Src\Application\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\ProgressSystem.cpp">
       <Filter>Src\Application\Object</Filter>
     </ClCompile>
     <ClCompile Include="Src\Application\Object\ProjectileManager.cpp">

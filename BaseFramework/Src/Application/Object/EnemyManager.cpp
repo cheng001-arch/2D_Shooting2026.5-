@@ -2,6 +2,7 @@
 #include "Application/main.h"
 #include "Application/Object/Enemy.h"
 #include "Application/Object/PlayerPlanet.h"
+#include "Application/Object/ProgressSystem.h"
 
 #include <algorithm>
 #include <random>
@@ -24,20 +25,34 @@ void EnemyManager::Init()
 	m_spGravityTrailTex->Load("Asset/Textures/weiba.png");
 }
 
+void EnemyManager::SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem)
+{
+	m_wpProgressSystem = progressSystem;
+}
+
 void EnemyManager::Update(const PlayerPlanet& playerPlanet)
 {
-	m_spawnTimer += Application::Instance().GetDeltaTime();
-
-	if (m_spawnTimer >= m_spawnInterval)
+	const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock();
+	const bool canSpawnEnemy = !progressSystem || !progressSystem->IsComplete();
+	if (canSpawnEnemy)
 	{
-		m_spawnTimer -= m_spawnInterval;
-		SpawnEnemy();
+		m_spawnTimer += Application::Instance().GetDeltaTime();
+
+		if (m_spawnTimer >= m_spawnInterval)
+		{
+			m_spawnTimer -= m_spawnInterval;
+			SpawnEnemy();
+		}
+
+		while (m_pendingCometCount > 0)
+		{
+			--m_pendingCometCount;
+			SpawnComet();
+		}
 	}
-
-	while (m_pendingCometCount > 0)
+	else
 	{
-		--m_pendingCometCount;
-		SpawnComet();
+		m_pendingCometCount = 0;
 	}
 
 	for (const std::shared_ptr<Enemy>& enemy : m_enemies)
@@ -63,11 +78,26 @@ void EnemyManager::NotifyEnemyDefeated(const Enemy& enemy)
 {
 	if (enemy.IsComet()) { return; }
 
+	if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
+	{
+		progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
+	}
+
 	++m_defeatCountForComet;
 	if (m_defeatCountForComet >= 5)
 	{
 		m_defeatCountForComet = 0;
 		++m_pendingCometCount;
+	}
+}
+
+void EnemyManager::NotifyEnemyCrashedIntoPlanet(const Enemy& enemy)
+{
+	if (enemy.IsComet()) { return; }
+
+	if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
+	{
+		progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
 	}
 }
 

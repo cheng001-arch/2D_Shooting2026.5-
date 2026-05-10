@@ -63,6 +63,7 @@ void CollisionSystem::HitEnemiesToPlayerPlanet(EnemyManager& enemyManager, Playe
 		if (toPlanet.LengthSquared() > hitRadius * hitRadius) { continue; }
 
 		explosionManager.SpawnPlanetHit(enemy->GetPos2D(), enemy->GetRadius());
+		enemyManager.NotifyEnemyCrashedIntoPlanet(*enemy);
 		playerPlanet.Damage(enemy->GetAttackPower());
 		turret.ShakeDamage();
 		enemy->Damage(999);

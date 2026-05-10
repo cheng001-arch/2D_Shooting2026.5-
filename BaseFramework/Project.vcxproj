@@ -284,6 +284,7 @@
     <ClInclude Include="Src\Application\Object\HeatRay.h" />
     <ClInclude Include="Src\Application\Object\Player.h" />
     <ClInclude Include="Src\Application\Object\PlayerPlanet.h" />
+    <ClInclude Include="Src\Application\Object\ProgressSystem.h" />
     <ClInclude Include="Src\Application\Object\ProjectileManager.h" />
     <ClInclude Include="Src\Application\Object\Turret.h" />
     <ClInclude Include="Src\Application\Object\UIManager.h" />
@@ -348,6 +349,7 @@
     <ClCompile Include="Src\Application\Object\HeatRay.cpp" />
     <ClCompile Include="Src\Application\Object\Player.cpp" />
     <ClCompile Include="Src\Application\Object\PlayerPlanet.cpp" />
+    <ClCompile Include="Src\Application\Object\ProgressSystem.cpp" />
     <ClCompile Include="Src\Application\Object\ProjectileManager.cpp" />
     <ClCompile Include="Src\Application\Object\Turret.cpp" />
     <ClCompile Include="Src\Application\Object\UIManager.cpp" />

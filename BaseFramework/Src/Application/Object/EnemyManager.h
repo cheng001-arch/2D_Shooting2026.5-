@@ -2,16 +2,19 @@
 
 class Enemy;
 class PlayerPlanet;
+class ProgressSystem;
 
 class EnemyManager
 {
 public:
 	void Init();
+	void SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem);
 	void Update(const PlayerPlanet& playerPlanet);
 	void DrawSprite();
 
 	std::vector<std::shared_ptr<Enemy>>& WorkEnemies() { return m_enemies; }
 	void NotifyEnemyDefeated(const Enemy& enemy);
+	void NotifyEnemyCrashedIntoPlanet(const Enemy& enemy);
 
 private:
 	enum class EnemyType
@@ -31,6 +34,7 @@ private:
 	std::shared_ptr<KdTexture> m_spLargeMeteorTex = nullptr;
 	std::shared_ptr<KdTexture> m_spCometTex = nullptr;
 	std::shared_ptr<KdTexture> m_spGravityTrailTex = nullptr;
+	std::weak_ptr<ProgressSystem> m_wpProgressSystem;
 	std::vector<std::shared_ptr<Enemy>> m_enemies;
 
 	float m_spawnTimer = 0.0f;
