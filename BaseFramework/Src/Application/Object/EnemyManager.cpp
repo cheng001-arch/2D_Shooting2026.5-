@@ -34,6 +34,12 @@ void EnemyManager::Reset()
 	m_isPlayerPlanetDead = false;
 }
 
+void EnemyManager::SetStageNo(int stageNo)
+{
+	m_stageNo = stageNo;
+	m_isCometBonusStage = m_stageNo == 5;
+}
+
 void EnemyManager::SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem)
 {
 	m_wpProgressSystem = progressSystem;
@@ -49,16 +55,24 @@ void EnemyManager::Update(const PlayerPlanet& playerPlanet)
 	{
 		m_spawnTimer += Application::Instance().GetDeltaTime();
 
-		if (m_spawnTimer >= m_spawnInterval)
+		if (m_isCometBonusStage)
+		{
+			while (m_spawnTimer >= m_cometBonusSpawnInterval)
+			{
+				m_spawnTimer -= m_cometBonusSpawnInterval;
+				SpawnComet();
+			}
+		}
+		else if (m_spawnTimer >= m_spawnInterval)
 		{
 			m_spawnTimer -= m_spawnInterval;
 			SpawnEnemy();
-		}
 
-		while (m_pendingCometCount > 0)
-		{
-			--m_pendingCometCount;
-			SpawnComet();
+			while (m_pendingCometCount > 0)
+			{
+				--m_pendingCometCount;
+				SpawnComet();
+			}
 		}
 	}
 	else
@@ -87,15 +101,22 @@ void EnemyManager::Update(const PlayerPlanet& playerPlanet)
 
 void EnemyManager::NotifyEnemyDefeated(const Enemy& enemy)
 {
-	if (enemy.IsComet()) { return; }
-
 	if (!m_isPlayerPlanetDead)
 	{
 		if (const std::shared_ptr<ProgressSystem> progressSystem = m_wpProgressSystem.lock())
 		{
-			progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
+			if (enemy.IsComet() && m_isCometBonusStage)
+			{
+				progressSystem->AddEnemyProgress(m_cometBonusProgress);
+			}
+			else if (!enemy.IsComet())
+			{
+				progressSystem->AddEnemyProgress(enemy.GetEnergyReward());
+			}
 		}
 	}
+
+	if (enemy.IsComet()) { return; }
 
 	++m_defeatCountForComet;
 	if (m_defeatCountForComet >= 5)

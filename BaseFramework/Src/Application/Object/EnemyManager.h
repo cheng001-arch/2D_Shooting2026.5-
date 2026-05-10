@@ -9,6 +9,7 @@ class EnemyManager
 public:
 	void Init();
 	void Reset();
+	void SetStageNo(int stageNo);
 	void SetProgressSystem(const std::shared_ptr<ProgressSystem>& progressSystem);
 	void Update(const PlayerPlanet& playerPlanet);
 	void DrawSprite();
@@ -42,10 +43,14 @@ private:
 	float m_spawnInterval = 120.0f;
 	int m_defeatCountForComet = 0;
 	int m_pendingCometCount = 0;
+	int m_stageNo = 1;
 	bool m_isPlayerPlanetDead = false;
+	bool m_isCometBonusStage = false;
 
 	float m_smallMeteorSpeed = 3.5f;
 	float m_mediumMeteorSpeed = 3.0f;
 	float m_largeMeteorSpeed = 2.5f;
 	float m_cometPathSpeed = 0.006f;
+	float m_cometBonusSpawnInterval = 45.0f;
+	int m_cometBonusProgress = 5;
 };

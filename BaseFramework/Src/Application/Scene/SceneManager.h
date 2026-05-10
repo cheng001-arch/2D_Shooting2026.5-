@@ -21,6 +21,7 @@ public:
 	void Update();
 	void DrawSprite();
 	void ChangeScene(SceneType nextScene);
+	void SelectStage(int stageNo);
 	void ResetResultStats();
 	void AddResultKill(int value = 1);
 	void AddResultMiss(int value = 1);
@@ -29,6 +30,7 @@ public:
 	void StartResultScene();
 
 	SceneType GetCurrentScene() const { return m_currentScene; }
+	int GetSelectedStageNo() const { return m_selectedStageNo; }
 	bool IsTitleScene() const { return m_currentScene == SceneType::Title; }
 	bool IsGameScene() const { return m_currentScene == SceneType::Game; }
 	bool IsPauseScene() const { return m_currentScene == SceneType::Pause; }
@@ -41,5 +43,6 @@ private:
 	StageSelectScene m_stageSelectScene;
 	PauseScene m_pauseScene;
 	ResultScene m_resultScene;
+	int m_selectedStageNo = 1;
 	bool m_prevGameEscape = false;
 };

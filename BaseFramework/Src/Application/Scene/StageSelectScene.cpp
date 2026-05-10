@@ -55,6 +55,7 @@ void StageSelectScene::Update()
 		{
 			if (icon.hover)
 			{
+				m_sceneManager->SelectStage(icon.stageNo);
 				m_sceneManager->ChangeScene(SceneManager::SceneType::Game);
 				break;
 			}
@@ -130,6 +131,7 @@ void StageSelectScene::SetupStageIcon(int index, const char* texturePath)
 	icon.drawPos = icon.basePos;
 	icon.size = { 108.0f, 108.0f };
 	icon.floatTimer = static_cast<float>(index) * 0.35f;
+	icon.stageNo = index + 1;
 	icon.scale = 1.0f;
 	icon.hover = false;
 	icon.active = true;

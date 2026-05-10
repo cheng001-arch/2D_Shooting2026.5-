@@ -69,6 +69,11 @@ void SceneManager::ChangeScene(SceneType nextScene)
 	m_prevGameEscape = false;
 }
 
+void SceneManager::SelectStage(int stageNo)
+{
+	m_selectedStageNo = stageNo;
+}
+
 void SceneManager::ResetResultStats()
 {
 	m_resultScene.ResetStats();

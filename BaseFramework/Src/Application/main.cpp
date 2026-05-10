@@ -211,6 +211,10 @@ void Application::ResetStageState()
 
 	if (m_enemyManager)
 	{
+		if (m_sceneManager)
+		{
+			m_enemyManager->SetStageNo(m_sceneManager->GetSelectedStageNo());
+		}
 		m_enemyManager->Reset();
 	}
 

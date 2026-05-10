@@ -20,6 +20,7 @@ private:
 		Math::Vector2 size = { 96.0f, 96.0f };
 		float scale = 1.0f;
 		float floatTimer = 0.0f;
+		int stageNo = 0;
 		bool hover = false;
 		bool active = false;
 	};
