@@ -1,4 +1,4 @@
-#include "ProjectileManager.h"
+﻿#include "ProjectileManager.h"
 #include "Application/main.h"
 
 #include <algorithm>
