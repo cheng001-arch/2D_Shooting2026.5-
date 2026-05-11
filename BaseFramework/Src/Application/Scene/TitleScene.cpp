@@ -9,15 +9,20 @@ void TitleScene::Init(SceneManager* sceneManager)
 	m_spBackgroundTex = std::make_shared<KdTexture>();
 	m_spBackgroundTex->Load("Asset/Textures/yuzhoubeijing.png");
 
+	m_spTitleTex = std::make_shared<KdTexture>();
+	m_spTitleTex->Load("Asset/Textures/title.png");
+	m_titleSize = FitTextureSize(m_spTitleTex, 560.0f);
+	m_titlePos = { 0.0f, 170.0f };
+
 	m_startButton.tex = std::make_shared<KdTexture>();
 	m_startButton.tex->Load("Asset/Textures/start.png");
-	m_startButton.pos = { 0.0f, 90.0f };
-	FitButtonSize(m_startButton, 360.0f);
+	m_startButton.pos = { 0.0f, -70.0f };
+	FitButtonSize(m_startButton, 300.0f);
 
 	m_exitButton.tex = std::make_shared<KdTexture>();
 	m_exitButton.tex->Load("Asset/Textures/exit.png");
-	m_exitButton.pos = { 0.0f, -140.0f };
-	FitButtonSize(m_exitButton, 360.0f);
+	m_exitButton.pos = { 0.0f, -250.0f };
+	FitButtonSize(m_exitButton, 300.0f);
 }
 
 void TitleScene::Update()
@@ -53,6 +58,7 @@ void TitleScene::DrawSprite()
 			720);
 	}
 
+	DrawTitle();
 	DrawButton(m_startButton);
 	DrawButton(m_exitButton);
 }
@@ -109,13 +115,30 @@ void TitleScene::DrawButton(const Button& button)
 
 void TitleScene::FitButtonSize(Button& button, float targetWidth)
 {
-	if (!button.tex) { return; }
+	button.size = FitTextureSize(button.tex, targetWidth);
+}
 
-	const UINT texW = button.tex->GetWidth();
-	const UINT texH = button.tex->GetHeight();
+Math::Vector2 TitleScene::FitTextureSize(const std::shared_ptr<KdTexture>& tex, float targetWidth) const
+{
+	if (!tex) { return { targetWidth, targetWidth }; }
 
-	if (texW == 0 || texH == 0) { return; }
+	const UINT texW = tex->GetWidth();
+	const UINT texH = tex->GetHeight();
+
+	if (texW == 0 || texH == 0) { return { targetWidth, targetWidth }; }
 
 	const float aspect = static_cast<float>(texH) / static_cast<float>(texW);
-	button.size = { targetWidth, targetWidth * aspect };
+	return { targetWidth, targetWidth * aspect };
+}
+
+void TitleScene::DrawTitle()
+{
+	if (!m_spTitleTex) { return; }
+
+	KdShaderManager::Instance().m_spriteShader.DrawTex(
+		m_spTitleTex.get(),
+		static_cast<int>(m_titlePos.x),
+		static_cast<int>(m_titlePos.y),
+		static_cast<int>(m_titleSize.x),
+		static_cast<int>(m_titleSize.y));
 }

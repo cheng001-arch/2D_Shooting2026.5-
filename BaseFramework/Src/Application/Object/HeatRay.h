@@ -23,15 +23,26 @@ public:
 	bool IsFiring() const { return m_isFiring; }
 
 private:
+	struct HitEffect
+	{
+		Math::Vector2 pos = Math::Vector2::Zero;
+		float frame = 0.0f;
+	};
+
 	void UpdateHeat(bool canFire);
 	void HitEnemies();
+	void SpawnHitEffect(const Math::Vector2& pos);
+	void UpdateHitEffects();
+	void DrawHitEffects();
 	bool IsEnemyOnRay(const Math::Vector2& enemyPos, float enemyRadius) const;
 
 	std::shared_ptr<KdTexture> m_spTex = nullptr;
+	std::shared_ptr<KdTexture> m_spHitEffectTex = nullptr;
 	std::weak_ptr<Turret> m_wpTurret;
 	std::weak_ptr<EnemyManager> m_wpEnemyManager;
 	std::weak_ptr<EnergySystem> m_wpEnergySystem;
 	std::unordered_map<class Enemy*, float> m_damageTimers;
+	std::vector<HitEffect> m_hitEffects;
 
 	Math::Vector2 m_muzzlePos = Math::Vector2::Zero;
 	Math::Vector2 m_direction = { 0.0f, 1.0f };
@@ -57,6 +68,12 @@ private:
 	float m_particleScrollSpeed = 42.0f;
 	float m_damageInterval = 6.0f;
 	float m_damagePower = 0.45f;
+	float m_hitEffectAnimFps = 25.0f;
+	float m_hitEffectDrawSize = 96.0f;
+	int m_hitEffectFrameWidth = 64;
+	int m_hitEffectFrameHeight = 64;
+	int m_hitEffectFrameCount = 18;
+	int m_hitEffectRowIndex = 7;
 
 	bool m_isFiring = false;
 	bool m_isOverheated = false;

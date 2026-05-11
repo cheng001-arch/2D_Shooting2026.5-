@@ -19,11 +19,15 @@ void HeatRay::Init(
 
 	m_spTex = std::make_shared<KdTexture>();
 	m_spTex->Load("Asset/Textures/lizi.png");
+
+	m_spHitEffectTex = std::make_shared<KdTexture>();
+	m_spHitEffectTex->Load("Asset/Textures/rerongqiangxiaoguo.png");
 }
 
 void HeatRay::Reset()
 {
 	m_damageTimers.clear();
+	m_hitEffects.clear();
 	m_heat = 0.0f;
 	m_fireChargeFrame = 0.0f;
 	m_overheatCoolFrame = 0.0f;
@@ -38,6 +42,8 @@ void HeatRay::Reset()
 void HeatRay::Update(bool wantsFire)
 {
 	const float dt = Application::Instance().GetDeltaTime();
+	UpdateHitEffects();
+
 	const bool canCharge = wantsFire && !m_isOverheated;
 	if (canCharge)
 	{
@@ -106,7 +112,11 @@ void HeatRay::Update(bool wantsFire)
 
 void HeatRay::DrawSprite()
 {
-	if ((!m_isFiring && !m_isDissolving) || !m_spTex) { return; }
+	if ((!m_isFiring && !m_isDissolving) || !m_spTex)
+	{
+		DrawHitEffects();
+		return;
+	}
 
 	const float angle = static_cast<float>(std::atan2(m_direction.y, m_direction.x)) + DirectX::XMConvertToRadians(-90.0f);
 	const float startDistance = m_isDissolving ? m_dissolveStartLength : 0.0f;
@@ -128,6 +138,7 @@ void HeatRay::DrawSprite()
 	}
 
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
+	DrawHitEffects();
 }
 
 void HeatRay::UpdateHeat(bool canFire)
@@ -190,6 +201,7 @@ void HeatRay::HitEnemies()
 		if (timerItr == m_damageTimers.end())
 		{
 			Application::Instance().AddResultDamage(m_damagePower);
+			SpawnHitEffect(enemy->GetPos2D());
 			enemy->Damage(m_damagePower);
 
 			if (enemy->IsExpired())
@@ -211,6 +223,7 @@ void HeatRay::HitEnemies()
 		{
 			timer -= m_damageInterval;
 			Application::Instance().AddResultDamage(m_damagePower);
+			SpawnHitEffect(enemy->GetPos2D());
 			enemy->Damage(m_damagePower);
 
 			if (enemy->IsExpired())
@@ -222,6 +235,57 @@ void HeatRay::HitEnemies()
 				break;
 			}
 		}
+	}
+}
+
+void HeatRay::SpawnHitEffect(const Math::Vector2& pos)
+{
+	HitEffect effect;
+	effect.pos = pos;
+	effect.frame = 0.0f;
+	m_hitEffects.push_back(effect);
+}
+
+void HeatRay::UpdateHitEffects()
+{
+	const float dt = Application::Instance().GetDeltaTime();
+	for (HitEffect& effect : m_hitEffects)
+	{
+		effect.frame += (m_hitEffectAnimFps / 60.0f) * dt;
+	}
+
+	m_hitEffects.erase(
+		std::remove_if(
+			m_hitEffects.begin(),
+			m_hitEffects.end(),
+			[this](const HitEffect& effect)
+			{
+				return effect.frame >= static_cast<float>(m_hitEffectFrameCount);
+			}),
+		m_hitEffects.end());
+}
+
+void HeatRay::DrawHitEffects()
+{
+	if (!m_spHitEffectTex) { return; }
+
+	for (const HitEffect& effect : m_hitEffects)
+	{
+		const int frame = std::clamp(static_cast<int>(effect.frame), 0, m_hitEffectFrameCount - 1);
+		const Math::Rectangle srcRect = {
+			frame * m_hitEffectFrameWidth,
+			m_hitEffectRowIndex * m_hitEffectFrameHeight,
+			m_hitEffectFrameWidth,
+			m_hitEffectFrameHeight
+		};
+
+		KdShaderManager::Instance().m_spriteShader.DrawTex(
+			m_spHitEffectTex.get(),
+			static_cast<int>(effect.pos.x),
+			static_cast<int>(effect.pos.y),
+			static_cast<int>(m_hitEffectDrawSize),
+			static_cast<int>(m_hitEffectDrawSize),
+			&srcRect);
 	}
 }
 

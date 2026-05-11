@@ -24,9 +24,14 @@ private:
 	void UpdateButton(Button& button, const Math::Vector2& mousePos);
 	void DrawButton(const Button& button);
 	void FitButtonSize(Button& button, float targetWidth);
+	Math::Vector2 FitTextureSize(const std::shared_ptr<KdTexture>& tex, float targetWidth) const;
+	void DrawTitle();
 
 	SceneManager* m_sceneManager = nullptr;
 	std::shared_ptr<KdTexture> m_spBackgroundTex = nullptr;
+	std::shared_ptr<KdTexture> m_spTitleTex = nullptr;
+	Math::Vector2 m_titlePos = { 0.0f, 190.0f };
+	Math::Vector2 m_titleSize = { 600.0f, 400.0f };
 	Button m_startButton;
 	Button m_exitButton;
 	bool m_prevLeftButton = false;

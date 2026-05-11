@@ -19,6 +19,7 @@ void WeaponSystem::Reset()
 	m_currentWeapon = WeaponType::Meteor;
 	m_prevLeftClick = false;
 	m_prevEKey = false;
+	m_waitLeftRelease = true;
 	m_meteorShootCoolFrame = 0.0f;
 	m_mimicPlanetAmmo = m_mimicPlanetMaxAmmo;
 	m_mimicPlanetRecoveryFrame = 0.0f;
@@ -47,6 +48,20 @@ void WeaponSystem::Update()
 	m_prevLeftClick = leftClick;
 
 	const std::shared_ptr<HeatRay> heatRay = m_wpHeatRay.lock();
+	if (m_waitLeftRelease)
+	{
+		if (heatRay)
+		{
+			heatRay->Update(false);
+		}
+
+		if (!leftClick)
+		{
+			m_waitLeftRelease = false;
+		}
+		return;
+	}
+
 	if (heatRay)
 	{
 		heatRay->Update(m_currentWeapon == WeaponType::HeatRay && leftClick);

@@ -37,6 +37,7 @@ private:
 	WeaponType m_currentWeapon = WeaponType::Meteor;
 	bool m_prevLeftClick = false;
 	bool m_prevEKey = false;
+	bool m_waitLeftRelease = false;
 
 	float m_meteorShootInterval = 18.0f;
 	float m_meteorShootCoolFrame = 0.0f;
