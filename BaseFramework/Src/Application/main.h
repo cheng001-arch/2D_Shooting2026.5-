@@ -45,6 +45,7 @@ private:
 	// アプリケーション解放
 	void Release();
 	void ResetStageState();
+	void SyncCursorVisibility(bool visible);
 
 	// ゲームウィンドウクラス
 	KdWindow		m_window;

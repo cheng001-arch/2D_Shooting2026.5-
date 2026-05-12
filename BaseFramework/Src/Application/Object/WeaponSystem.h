@@ -12,6 +12,7 @@ public:
 		const std::shared_ptr<ProjectileManager>& projectileManager,
 		const std::shared_ptr<HeatRay>& heatRay);
 	void Reset();
+	void SetStageNo(int stageNo);
 	void Update();
 
 	enum class WeaponType
@@ -38,12 +39,14 @@ private:
 	bool m_prevLeftClick = false;
 	bool m_prevEKey = false;
 	bool m_waitLeftRelease = false;
+	bool m_isWeaponSwitchLocked = false;
+	bool m_isMimicPlanetOnlySwitchStage = false;
 
 	float m_meteorShootInterval = 18.0f;
 	float m_meteorShootCoolFrame = 0.0f;
 
-	int m_mimicPlanetAmmo = 3;
-	int m_mimicPlanetMaxAmmo = 3;
+	int m_mimicPlanetAmmo = 4;
+	int m_mimicPlanetMaxAmmo = 4;
 	float m_mimicPlanetRecoveryFrame = 0.0f;
 	float m_mimicPlanetRecoveryInterval = 180.0f;
 };

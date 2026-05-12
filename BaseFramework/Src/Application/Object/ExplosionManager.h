@@ -8,6 +8,7 @@ public:
 	void Update();
 	void DrawSprite();
 	void Spawn(const Math::Vector2& pos);
+	void SpawnLarge(const Math::Vector2& pos, float size);
 	void SpawnPlanetHit(const Math::Vector2& pos, float enemyRadius);
 
 private:

@@ -17,6 +17,7 @@ public:
 		const std::shared_ptr<EnemyManager>& enemyManager,
 		const std::shared_ptr<ProjectileManager>& projectileManager);
 	void Reset();
+	void SetStageNo(int stageNo);
 	void Update();
 	void DrawSprite();
 
@@ -53,4 +54,5 @@ private:
 	int m_frameCount = 24;
 	bool m_isActive = false;
 	bool m_prevRKey = false;
+	bool m_isLocked = false;
 };

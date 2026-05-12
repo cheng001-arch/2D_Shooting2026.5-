@@ -4,6 +4,7 @@
 
 class EnemyManager;
 class EnergySystem;
+class ExplosionManager;
 class Turret;
 
 class HeatRay
@@ -12,7 +13,8 @@ public:
 	void Init(
 		const std::shared_ptr<Turret>& turret,
 		const std::shared_ptr<EnemyManager>& enemyManager,
-		const std::shared_ptr<EnergySystem>& energySystem);
+		const std::shared_ptr<EnergySystem>& energySystem,
+		const std::shared_ptr<ExplosionManager>& explosionManager);
 	void Reset();
 	void Update(bool wantsFire);
 	void DrawSprite();
@@ -31,6 +33,7 @@ private:
 
 	void UpdateHeat(bool canFire);
 	void HitEnemies();
+	void TriggerStage3CrystalBurst(class Enemy& crystalEnemy, EnemyManager& enemyManager, EnergySystem& energySystem, ExplosionManager& explosionManager);
 	void SpawnHitEffect(const Math::Vector2& pos);
 	void UpdateHitEffects();
 	void DrawHitEffects();
@@ -41,6 +44,7 @@ private:
 	std::weak_ptr<Turret> m_wpTurret;
 	std::weak_ptr<EnemyManager> m_wpEnemyManager;
 	std::weak_ptr<EnergySystem> m_wpEnergySystem;
+	std::weak_ptr<ExplosionManager> m_wpExplosionManager;
 	std::unordered_map<class Enemy*, float> m_damageTimers;
 	std::vector<HitEffect> m_hitEffects;
 

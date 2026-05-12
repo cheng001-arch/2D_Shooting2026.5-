@@ -88,6 +88,15 @@ void ExplosionManager::Spawn(const Math::Vector2& pos)
 	m_explosions.push_back(explosion);
 }
 
+void ExplosionManager::SpawnLarge(const Math::Vector2& pos, float size)
+{
+	Explosion explosion;
+	explosion.pos = pos;
+	explosion.drawSize = { size, size };
+	explosion.type = ExplosionType::ProjectileHit;
+	m_explosions.push_back(explosion);
+}
+
 void ExplosionManager::SpawnPlanetHit(const Math::Vector2& pos, float enemyRadius)
 {
 	const float size = std::clamp(enemyRadius * 3.0f, 96.0f, 320.0f);

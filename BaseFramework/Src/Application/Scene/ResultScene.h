@@ -17,6 +17,7 @@ public:
 
 private:
 	void DrawResultText();
+	Math::Vector2 GetAnimatedLinePos(int index, const Math::Vector2& basePos) const;
 
 	SceneManager* m_sceneManager = nullptr;
 	std::shared_ptr<KdTexture> m_spBackgroundTex = nullptr;

@@ -25,6 +25,16 @@ void WeaponSystem::Reset()
 	m_mimicPlanetRecoveryFrame = 0.0f;
 }
 
+void WeaponSystem::SetStageNo(int stageNo)
+{
+	m_isWeaponSwitchLocked = stageNo == 1;
+	m_isMimicPlanetOnlySwitchStage = stageNo == 2;
+	if (m_isWeaponSwitchLocked)
+	{
+		m_currentWeapon = WeaponType::Meteor;
+	}
+}
+
 void WeaponSystem::Update()
 {
 	const float dt = Application::Instance().GetDeltaTime();
@@ -133,7 +143,19 @@ void WeaponSystem::ChangeWeapon()
 	const bool trigger = eKey && !m_prevEKey;
 	m_prevEKey = eKey;
 
+	if (m_isWeaponSwitchLocked)
+	{
+		m_currentWeapon = WeaponType::Meteor;
+		return;
+	}
+
 	if (!trigger) { return; }
+
+	if (m_isMimicPlanetOnlySwitchStage)
+	{
+		m_currentWeapon = m_currentWeapon == WeaponType::MimicPlanet ? WeaponType::Meteor : WeaponType::MimicPlanet;
+		return;
+	}
 
 	if (m_currentWeapon == WeaponType::Meteor)
 	{

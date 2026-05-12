@@ -44,6 +44,10 @@ void CollisionSystem::HitProjectilesToEnemies(ProjectileManager& projectileManag
 				Application::Instance().AddResultKill();
 				enemyManager.NotifyEnemyDefeated(*enemy);
 				energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+				if (enemy->CanTriggerFullScreenBurst())
+				{
+					TriggerStage3CrystalBurst(*enemy, enemyManager, energySystem, explosionManager);
+				}
 			}
 			projectile.attackPower = 0;
 			break;
@@ -71,5 +75,30 @@ void CollisionSystem::HitEnemiesToPlayerPlanet(EnemyManager& enemyManager, Playe
 		playerPlanet.Damage(enemy->GetAttackPower());
 		turret.ShakeDamage();
 		enemy->Damage(999);
+	}
+}
+
+void CollisionSystem::TriggerStage3CrystalBurst(Enemy& crystalEnemy, EnemyManager& enemyManager, EnergySystem& energySystem, ExplosionManager& explosionManager)
+{
+	constexpr float kBurstDamage = 20.0f;
+	constexpr float kBurstExplosionSize = 560.0f;
+
+	explosionManager.SpawnLarge(crystalEnemy.GetPos2D(), kBurstExplosionSize);
+
+	for (const std::shared_ptr<Enemy>& enemy : enemyManager.WorkEnemies())
+	{
+		if (!enemy || enemy.get() == &crystalEnemy || enemy->IsExpired()) { continue; }
+
+		const bool wasAlive = !enemy->IsExpired();
+		Application::Instance().AddResultDamage(kBurstDamage);
+		enemy->Damage(kBurstDamage);
+
+		if (wasAlive && enemy->IsExpired())
+		{
+			explosionManager.Spawn(enemy->GetPos2D());
+			Application::Instance().AddResultKill();
+			enemyManager.NotifyEnemyDefeated(*enemy);
+			energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+		}
 	}
 }

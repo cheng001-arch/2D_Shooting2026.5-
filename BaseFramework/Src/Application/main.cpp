@@ -44,8 +44,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_  HINSTANCE, _In_ LPSTR , _In_ int)
 
 	return 0;
 }
-
-// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // アプリケーション更新開始
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 void Application::KdBeginUpdate()
@@ -81,11 +79,7 @@ void Application::Update()
 	if (m_sceneManager)
 	{
 		const bool shouldShowCursor = !m_sceneManager->IsGameScene();
-		if (m_isCursorVisible != shouldShowCursor)
-		{
-			ShowCursor(shouldShowCursor);
-			m_isCursorVisible = shouldShowCursor;
-		}
+		SyncCursorVisibility(shouldShowCursor);
 		m_sceneManager->Update();
 		if (m_sceneManager->IsGameScene() && !m_isStageRunning)
 		{
@@ -162,6 +156,10 @@ void Application::Update()
 
 	const bool isStageClear = m_progressSystem && m_progressSystem->IsComplete();
 	const bool isPlayerDead = m_playerPlanet && m_playerPlanet->GetHp() <= 0;
+	if (isPlayerDead && m_turret)
+	{
+		m_turret->BeginDeathExplosion();
+	}
 	if (m_sceneManager && (isStageClear || isPlayerDead))
 	{
 		m_isResultWaiting = true;
@@ -241,12 +239,44 @@ void Application::ResetStageState()
 	if (m_weaponSystem)
 	{
 		m_weaponSystem->Reset();
+		if (m_sceneManager)
+		{
+			m_weaponSystem->SetStageNo(m_sceneManager->GetSelectedStageNo());
+		}
 	}
 
 	if (m_blackHole)
 	{
 		m_blackHole->Reset();
+		if (m_sceneManager)
+		{
+			m_blackHole->SetStageNo(m_sceneManager->GetSelectedStageNo());
+		}
 	}
+
+	if (m_turret)
+	{
+		m_turret->ResetDestruction();
+	}
+}
+
+void Application::SyncCursorVisibility(bool visible)
+{
+	if (m_isCursorVisible == visible)
+	{
+		return;
+	}
+
+	if (visible)
+	{
+		while (ShowCursor(TRUE) < 0) {}
+	}
+	else
+	{
+		while (ShowCursor(FALSE) >= 0) {}
+	}
+
+	m_isCursorVisible = visible;
 }
 
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -490,8 +520,7 @@ bool Application::Init(int w, int h)
 	// ゲーム固有の初期化
 	//===================================================================
 	// 例えばカーソルを消したい場合
-	ShowCursor(true);
-	m_isCursorVisible = true;
+	SyncCursorVisibility(true);
 
 	m_backgroundTex = std::make_shared<KdTexture>();
 	m_backgroundTex->Load("Asset/Textures/yuzhoubeijing.png");
@@ -523,7 +552,7 @@ bool Application::Init(int w, int h)
 	m_explosionManager->Init();
 
 	m_heatRay = std::make_shared<HeatRay>();
-	m_heatRay->Init(m_turret, m_enemyManager, m_energySystem);
+	m_heatRay->Init(m_turret, m_enemyManager, m_energySystem, m_explosionManager);
 
 	m_weaponSystem = std::make_shared<WeaponSystem>();
 	m_weaponSystem->Init(m_turret, m_projectileManager, m_heatRay);

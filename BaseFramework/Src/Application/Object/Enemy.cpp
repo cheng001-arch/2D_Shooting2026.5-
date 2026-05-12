@@ -28,6 +28,14 @@ void Enemy::Update(const Math::Vector2& planetCenter, float planetRadius)
 	if (m_isBlackHoleCaptured)
 	{
 		m_isGravityAttracted = false;
+		if (m_isStage4Crystal)
+		{
+			m_blackHoleShrinkRate = std::max(
+				0.05f,
+				m_blackHoleShrinkRate - 0.03f * Application::Instance().GetDeltaTime());
+			m_size = m_baseSize * m_blackHoleShrinkRate;
+			m_radius = m_baseRadius * m_blackHoleShrinkRate;
+		}
 		SetPos(m_pos);
 		return;
 	}
@@ -155,7 +163,23 @@ void Enemy::SetStatus(float hp, int attackPower, int energyReward, float fallSpe
 	m_energyReward = energyReward;
 	m_fallSpeed = fallSpeed;
 	m_size = size;
+	m_baseSize = size;
 	m_radius = radius;
+	m_baseRadius = radius;
+	m_blackHoleShrinkRate = 1.0f;
+}
+
+void Enemy::SetBlackHoleCaptured(bool captured)
+{
+	if (m_isBlackHoleCaptured == captured) { return; }
+
+	m_isBlackHoleCaptured = captured;
+	if (!m_isBlackHoleCaptured)
+	{
+		m_blackHoleShrinkRate = 1.0f;
+		m_size = m_baseSize;
+		m_radius = m_baseRadius;
+	}
 }
 
 void Enemy::SetCometPath(const Math::Vector2& start, const Math::Vector2& control, const Math::Vector2& end, float pathSpeed)

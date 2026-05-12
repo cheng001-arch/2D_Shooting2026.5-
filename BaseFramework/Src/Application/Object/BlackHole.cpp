@@ -34,11 +34,30 @@ void BlackHole::Reset()
 	m_prevRKey = false;
 }
 
+void BlackHole::SetStageNo(int stageNo)
+{
+	m_isLocked = stageNo <= 3;
+	if (m_isLocked && m_isActive)
+	{
+		ReleaseCapturedEnemies();
+		m_enemyCenterTimers.clear();
+		m_projectileCenterTimers.clear();
+		m_lifeFrame = 0.0f;
+		m_anime = 0.0f;
+		m_isActive = false;
+	}
+}
+
 void BlackHole::Update()
 {
 	const bool rKey = (GetAsyncKeyState('R') & 0x8000) != 0;
 	const bool trigger = rKey && !m_prevRKey;
 	m_prevRKey = rKey;
+
+	if (m_isLocked)
+	{
+		return;
+	}
 
 	if (trigger)
 	{

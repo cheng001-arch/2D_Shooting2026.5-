@@ -1,6 +1,7 @@
 #pragma once
 
 class EnergySystem;
+class Enemy;
 class EnemyManager;
 class ExplosionManager;
 class PlayerPlanet;
@@ -15,4 +16,5 @@ public:
 private:
 	void HitProjectilesToEnemies(ProjectileManager& projectileManager, EnemyManager& enemyManager, EnergySystem& energySystem, ExplosionManager& explosionManager);
 	void HitEnemiesToPlayerPlanet(EnemyManager& enemyManager, PlayerPlanet& playerPlanet, Turret& turret, ExplosionManager& explosionManager);
+	void TriggerStage3CrystalBurst(Enemy& crystalEnemy, EnemyManager& enemyManager, EnergySystem& energySystem, ExplosionManager& explosionManager);
 };

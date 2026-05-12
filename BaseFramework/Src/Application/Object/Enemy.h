@@ -18,7 +18,9 @@ public:
 	void SetGravityTrailTexture(const std::shared_ptr<KdTexture>& tex) { m_spGravityTrailTex = tex; }
 	void SetStatus(float hp, int attackPower, int energyReward, float fallSpeed, const Math::Vector2& size, float radius);
 	void SetCometPath(const Math::Vector2& start, const Math::Vector2& control, const Math::Vector2& end, float pathSpeed);
-	void SetBlackHoleCaptured(bool captured) { m_isBlackHoleCaptured = captured; }
+	void SetBlackHoleCaptured(bool captured);
+	void SetStage3Crystal(bool isStage3Crystal) { m_isStage3Crystal = isStage3Crystal; }
+	void SetStage4Crystal(bool isStage4Crystal) { m_isStage4Crystal = isStage4Crystal; }
 	void Damage(float attackPower);
 
 	Math::Vector2 GetPos2D() const { return m_pos; }
@@ -26,6 +28,9 @@ public:
 	int GetAttackPower() const { return m_attackPower; }
 	int GetEnergyReward() const { return m_energyReward; }
 	bool IsComet() const { return m_isComet; }
+	bool IsStage3Crystal() const { return m_isStage3Crystal; }
+	bool IsStage4Crystal() const { return m_isStage4Crystal; }
+	bool CanTriggerFullScreenBurst() const { return m_isStage3Crystal || m_isStage4Crystal; }
 	bool IsBlackHoleCaptured() const { return m_isBlackHoleCaptured; }
 
 private:
@@ -34,6 +39,7 @@ private:
 
 	Math::Vector2 m_pos = Math::Vector2::Zero;
 	Math::Vector2 m_size = { 80.0f, 80.0f };
+	Math::Vector2 m_baseSize = { 80.0f, 80.0f };
 	Math::Vector2 m_moveDir = { 0.0f, -1.0f };
 	Math::Vector2 m_cometStart = Math::Vector2::Zero;
 	Math::Vector2 m_cometControl = Math::Vector2::Zero;
@@ -44,7 +50,9 @@ private:
 	float m_cometT = 0.0f;
 	float m_angle = 0.0f;
 	float m_radius = 32.0f;
+	float m_baseRadius = 32.0f;
 	float m_hp = 1.0f;
+	float m_blackHoleShrinkRate = 1.0f;
 	float m_gravityTrailFrame = 0.0f;
 	float m_gravityTrailAnimFps = 20.0f;
 	int m_gravityTrailFrameWidth = 64;
@@ -54,6 +62,8 @@ private:
 	int m_attackPower = 1;
 	int m_energyReward = 3;
 	bool m_isComet = false;
+	bool m_isStage3Crystal = false;
+	bool m_isStage4Crystal = false;
 	bool m_isBlackHoleCaptured = false;
 	bool m_isGravityAttracted = false;
 };

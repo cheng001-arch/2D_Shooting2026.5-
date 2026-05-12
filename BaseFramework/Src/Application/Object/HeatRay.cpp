@@ -3,6 +3,7 @@
 #include "Application/Object/EnergySystem.h"
 #include "Application/Object/Enemy.h"
 #include "Application/Object/EnemyManager.h"
+#include "Application/Object/ExplosionManager.h"
 #include "Application/Object/Turret.h"
 
 #include <algorithm>
@@ -11,11 +12,13 @@
 void HeatRay::Init(
 	const std::shared_ptr<Turret>& turret,
 	const std::shared_ptr<EnemyManager>& enemyManager,
-	const std::shared_ptr<EnergySystem>& energySystem)
+	const std::shared_ptr<EnergySystem>& energySystem,
+	const std::shared_ptr<ExplosionManager>& explosionManager)
 {
 	m_wpTurret = turret;
 	m_wpEnemyManager = enemyManager;
 	m_wpEnergySystem = energySystem;
+	m_wpExplosionManager = explosionManager;
 
 	m_spTex = std::make_shared<KdTexture>();
 	m_spTex->Load("Asset/Textures/lizi.png");
@@ -181,7 +184,8 @@ void HeatRay::HitEnemies()
 {
 	const std::shared_ptr<EnemyManager> enemyManager = m_wpEnemyManager.lock();
 	const std::shared_ptr<EnergySystem> energySystem = m_wpEnergySystem.lock();
-	if (!enemyManager || !energySystem) { return; }
+	const std::shared_ptr<ExplosionManager> explosionManager = m_wpExplosionManager.lock();
+	if (!enemyManager || !energySystem || !explosionManager) { return; }
 
 	const float dt = Application::Instance().GetDeltaTime();
 	std::vector<std::shared_ptr<Enemy>>& enemies = enemyManager->WorkEnemies();
@@ -206,9 +210,14 @@ void HeatRay::HitEnemies()
 
 			if (enemy->IsExpired())
 			{
+				explosionManager->Spawn(enemy->GetPos2D());
 				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+				if (enemy->CanTriggerFullScreenBurst())
+				{
+					TriggerStage3CrystalBurst(*enemy, *enemyManager, *energySystem, *explosionManager);
+				}
 				m_damageTimers.erase(enemyKey);
 				continue;
 			}
@@ -228,12 +237,43 @@ void HeatRay::HitEnemies()
 
 			if (enemy->IsExpired())
 			{
+				explosionManager->Spawn(enemy->GetPos2D());
 				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+				if (enemy->CanTriggerFullScreenBurst())
+				{
+					TriggerStage3CrystalBurst(*enemy, *enemyManager, *energySystem, *explosionManager);
+				}
 				m_damageTimers.erase(enemyKey);
 				break;
 			}
+		}
+	}
+}
+
+void HeatRay::TriggerStage3CrystalBurst(Enemy& crystalEnemy, EnemyManager& enemyManager, EnergySystem& energySystem, ExplosionManager& explosionManager)
+{
+	constexpr float kBurstDamage = 20.0f;
+	constexpr float kBurstExplosionSize = 560.0f;
+
+	explosionManager.SpawnLarge(crystalEnemy.GetPos2D(), kBurstExplosionSize);
+
+	for (const std::shared_ptr<Enemy>& enemy : enemyManager.WorkEnemies())
+	{
+		if (!enemy || enemy.get() == &crystalEnemy || enemy->IsExpired()) { continue; }
+
+		const bool wasAlive = !enemy->IsExpired();
+		Application::Instance().AddResultDamage(kBurstDamage);
+		enemy->Damage(kBurstDamage);
+
+		if (wasAlive && enemy->IsExpired())
+		{
+			explosionManager.Spawn(enemy->GetPos2D());
+			Application::Instance().AddResultKill();
+			enemyManager.NotifyEnemyDefeated(*enemy);
+			energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+			m_damageTimers.erase(enemy.get());
 		}
 	}
 }

@@ -126,19 +126,8 @@ void UIManager::DrawAmmoPreview()
 	{
 		const int ammo = weaponSystem->GetMimicPlanetAmmo();
 		iconTex = m_spMimicPlanetAmmoTex;
-
-		if (ammo <= 0)
-		{
-			frame = 4;
-		}
-		else if (ammo == 1)
-		{
-			frame = 3;
-		}
-		else if (ammo == 2)
-		{
-			frame = 2;
-		}
+		const int maxAmmo = std::max(1, weaponSystem->GetMimicPlanetMaxAmmo());
+		frame = std::clamp(maxAmmo - ammo, 0, 4);
 	}
 	else if (weaponSystem->GetCurrentWeapon() == WeaponSystem::WeaponType::HeatRay)
 	{
