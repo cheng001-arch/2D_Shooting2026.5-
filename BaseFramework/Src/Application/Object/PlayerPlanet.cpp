@@ -10,7 +10,7 @@ void PlayerPlanet::Init()
 	m_drawType = eDrawTypeUI;
 
 	m_spTex = std::make_shared<KdTexture>();
-	m_spTex->Load("Asset/Textures/diqiu.png");
+	m_spTex->Load("Asset/Textures/diqiu3.png");
 
 	m_spDeathExplosionTex = std::make_shared<KdTexture>();
 	m_spDeathExplosionTex->Load("Asset/Textures/baozha4.png");

@@ -16,11 +16,13 @@ public:
 	void Update();
 	void DrawSprite();
 	void ShakeEnergyGauge();
+	void SetStageNo(int stageNo);
 
 private:
 	Math::Vector2 GetMouseSpritePos() const;
 	void DrawPlayerPlanetHp();
 	void DrawEnergy();
+	void DrawEnergyRing(const Math::Vector2& center, float energyRate);
 	void DrawAmmoPreview();
 	void DrawGameOver();
 	void ShakePlayerPlanetHpGauge();
@@ -34,6 +36,7 @@ private:
 	std::shared_ptr<KdTexture> m_spMeteorAmmoTex = nullptr;
 	std::shared_ptr<KdTexture> m_spMimicPlanetAmmoTex = nullptr;
 	std::shared_ptr<KdTexture> m_spHeatRayAmmoTex = nullptr;
+	std::shared_ptr<KdTexture> m_spWeaponSwitchKeyTex = nullptr;
 	std::weak_ptr<EnergySystem> m_wpEnergySystem;
 	std::weak_ptr<PlayerPlanet> m_wpPlayerPlanet;
 	std::weak_ptr<WeaponSystem> m_wpWeaponSystem;
@@ -55,19 +58,22 @@ private:
 	float m_planetHpShakeDuration = 36.0f;
 	float m_planetHpShakePower = 34.0f;
 
-	int m_energyFrameWidth = 19;
-	int m_energyFrameHeight = 35;
-	Math::Vector2 m_energyDrawPos = { 525.0f, -325.0f };
-	Math::Vector2 m_energyDrawSize = { 114.0f, 210.0f };
+	Math::Vector2 m_energyDrawPos = { 550.0f, -250.0f };
+	Math::Vector2 m_energyDrawSize = { 142.0f, 142.0f };
+	float m_energyRingRadius = 82.0f;
+	int m_energyRingThickness = 5;
 	float m_energyShakeFrame = 0.0f;
 	float m_energyShakeDuration = 30.0f;
 	float m_energyShakePower = 18.0f;
+	int m_stageNo = 1;
 
 	int m_ammoFrameWidth = 48;
 	int m_ammoFrameHeight = 50;
 	Math::Vector2 m_ammoDrawPos = { 120.0f, -205.0f };
 	Math::Vector2 m_ammoDrawSize = { 96.0f, 100.0f };
 	Math::Vector2 m_ammoIconDrawSize = { 58.0f, 58.0f };
+	Math::Vector2 m_weaponSwitchKeyOffset = { 0.0f, -72.0f };
+	Math::Vector2 m_weaponSwitchKeyDrawSize = { 72.0f, 48.0f };
 	float m_ammoShakeFrame = 0.0f;
 	float m_ammoShakeDuration = 36.0f;
 	float m_ammoShakePower = 32.0f;

@@ -254,6 +254,11 @@ void Application::ResetStageState()
 		}
 	}
 
+	if (m_uiManager && m_sceneManager)
+	{
+		m_uiManager->SetStageNo(m_sceneManager->GetSelectedStageNo());
+	}
+
 	if (m_turret)
 	{
 		m_turret->ResetDestruction();

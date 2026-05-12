@@ -23,7 +23,7 @@ void UIManager::Init(
 	m_spPlanetHpTex->Load("Asset/Textures/diqiuxueliang.png");
 
 	m_spEnergyTex = std::make_shared<KdTexture>();
-	m_spEnergyTex->Load("Asset/Textures/yuzhounengliang.png");
+	m_spEnergyTex->Load("Asset/Textures/yuzhounengliang1.png");
 
 	m_spGameOverTex = std::make_shared<KdTexture>();
 	m_spGameOverTex->Load("Asset/Textures/gameover1.png");
@@ -39,6 +39,9 @@ void UIManager::Init(
 
 	m_spHeatRayAmmoTex = std::make_shared<KdTexture>();
 	m_spHeatRayAmmoTex->Load("Asset/Textures/lizi.png");
+
+	m_spWeaponSwitchKeyTex = std::make_shared<KdTexture>();
+	m_spWeaponSwitchKeyTex->Load("Asset/Textures/E.png");
 
 	if (playerPlanet)
 	{
@@ -74,6 +77,12 @@ void UIManager::Update()
 void UIManager::ShakeEnergyGauge()
 {
 	m_energyShakeFrame = m_energyShakeDuration;
+}
+
+void UIManager::SetStageNo(int stageNo)
+{
+	m_stageNo = stageNo;
+	m_energyShakeFrame = 0.0f;
 }
 
 void UIManager::ShakePlayerPlanetHpGauge()
@@ -170,26 +179,28 @@ void UIManager::DrawAmmoPreview()
 		static_cast<int>(drawPos.y),
 		static_cast<int>(m_ammoIconDrawSize.x),
 		static_cast<int>(m_ammoIconDrawSize.y));
+
+	if (m_stageNo > 1 && m_spWeaponSwitchKeyTex)
+	{
+		const Math::Vector2 keyPos = drawPos + m_weaponSwitchKeyOffset;
+		KdShaderManager::Instance().m_spriteShader.DrawTex(
+			m_spWeaponSwitchKeyTex.get(),
+			static_cast<int>(keyPos.x),
+			static_cast<int>(keyPos.y),
+			static_cast<int>(m_weaponSwitchKeyDrawSize.x),
+			static_cast<int>(m_weaponSwitchKeyDrawSize.y));
+	}
 }
 
 void UIManager::DrawEnergy()
 {
+	if (m_stageNo <= 3) { return; }
+
 	const std::shared_ptr<EnergySystem> energySystem = m_wpEnergySystem.lock();
 	if (!m_spEnergyTex || !energySystem) { return; }
 
 	const float energy = energySystem->GetEnergy();
 	const float energyRate = std::clamp(energy / energySystem->GetMaxEnergy(), 0.0f, 1.0f);
-	const int drawHeight = static_cast<int>(m_energyDrawSize.y * energyRate);
-	const int srcHeight = static_cast<int>(m_energyFrameHeight * energyRate);
-
-	if (drawHeight <= 0 || srcHeight <= 0) { return; }
-
-	const Math::Rectangle srcRect = {
-		0,
-		m_energyFrameHeight - srcHeight,
-		m_energyFrameWidth,
-		srcHeight
-	};
 
 	Math::Vector2 drawPos = m_energyDrawPos;
 	if (m_energyShakeFrame > 0.0f)
@@ -199,15 +210,69 @@ void UIManager::DrawEnergy()
 		drawPos.y += std::cos(m_energyShakeFrame * 3.6f) * m_energyShakePower * 0.6f * shakeRate;
 	}
 
+	DrawEnergyRing(drawPos, energyRate);
+
+	const Math::Color iconColor = Math::Color(1.0f, 1.0f, 1.0f, 0.18f + 0.82f * energyRate);
 	KdShaderManager::Instance().m_spriteShader.DrawTex(
 		m_spEnergyTex.get(),
 		static_cast<int>(drawPos.x),
 		static_cast<int>(drawPos.y),
 		static_cast<int>(m_energyDrawSize.x),
-		drawHeight,
-		&srcRect,
-		&kWhiteColor,
-		{ 0.0f, 0.0f });
+		static_cast<int>(m_energyDrawSize.y),
+		nullptr,
+		&iconColor);
+}
+
+void UIManager::DrawEnergyRing(const Math::Vector2& center, float energyRate)
+{
+	constexpr float twoPi = 6.28318530718f;
+	const float startAngle = -DirectX::XM_PIDIV2;
+	const float endAngle = startAngle + twoPi * std::clamp(energyRate, 0.0f, 1.0f);
+	const int segmentCount = 96;
+
+	const Math::Color backColor = Math::Color(0.18f, 0.08f, 0.28f, 0.52f);
+	const Math::Color chargeColor = Math::Color(0.72f, 0.16f, 1.0f, 0.96f);
+
+	for (int layer = 0; layer < m_energyRingThickness; ++layer)
+	{
+		const float radius = m_energyRingRadius + static_cast<float>(layer - m_energyRingThickness / 2);
+		for (int i = 0; i < segmentCount; ++i)
+		{
+			const float t0 = static_cast<float>(i) / static_cast<float>(segmentCount);
+			const float t1 = static_cast<float>(i + 1) / static_cast<float>(segmentCount);
+			const float angle0 = startAngle + twoPi * t0;
+			const float angle1 = startAngle + twoPi * t1;
+
+			KdShaderManager::Instance().m_spriteShader.DrawLine(
+				static_cast<int>(center.x + std::cos(angle0) * radius),
+				static_cast<int>(center.y + std::sin(angle0) * radius),
+				static_cast<int>(center.x + std::cos(angle1) * radius),
+				static_cast<int>(center.y + std::sin(angle1) * radius),
+				&backColor);
+		}
+	}
+
+	if (energyRate <= 0.0f) { return; }
+
+	const int progressSegments = std::max(1, static_cast<int>(segmentCount * energyRate));
+	for (int layer = 0; layer < m_energyRingThickness; ++layer)
+	{
+		const float radius = m_energyRingRadius + static_cast<float>(layer - m_energyRingThickness / 2);
+		for (int i = 0; i < progressSegments; ++i)
+		{
+			const float t0 = static_cast<float>(i) / static_cast<float>(segmentCount);
+			const float t1 = static_cast<float>(i + 1) / static_cast<float>(segmentCount);
+			const float angle0 = startAngle + twoPi * t0;
+			const float angle1 = std::min(startAngle + twoPi * t1, endAngle);
+
+			KdShaderManager::Instance().m_spriteShader.DrawLine(
+				static_cast<int>(center.x + std::cos(angle0) * radius),
+				static_cast<int>(center.y + std::sin(angle0) * radius),
+				static_cast<int>(center.x + std::cos(angle1) * radius),
+				static_cast<int>(center.y + std::sin(angle1) * radius),
+				&chargeColor);
+		}
+	}
 }
 
 void UIManager::DrawPlayerPlanetHp()

@@ -305,7 +305,7 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 		enemy->SetStatus(
 			3,
 			0,
-			70,
+			m_isCometBonusStage ? 20 : 70,
 			0.0f,
 			{ 120.0f, 120.0f },
 			48.0f);
