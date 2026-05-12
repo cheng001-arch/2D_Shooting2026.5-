@@ -107,6 +107,10 @@ void Application::Update()
 	if (m_playerPlanet && (GetAsyncKeyState('O') & 0x8000))
 	{
 		m_playerPlanet->ResetHp();
+		if (m_turret)
+		{
+			m_turret->ResetDestruction();
+		}
 	}
 
 	if (m_turret)

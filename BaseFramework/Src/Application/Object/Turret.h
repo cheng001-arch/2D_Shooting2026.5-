@@ -18,6 +18,7 @@ public:
 	void ShakeDamage();
 	void BeginDeathExplosion();
 	void ResetDestruction();
+	bool IsDestroyed() const { return m_deathStarted; }
 
 	float GetAngle() const { return m_angle; }
 	Math::Vector2 GetPos2D() const { return m_pos; }
@@ -34,26 +35,33 @@ private:
 
 	struct Debris
 	{
+		std::shared_ptr<KdTexture> tex = nullptr;
 		Math::Rectangle srcRect = {};
+		Math::Vector2 drawSize = Math::Vector2::Zero;
 		Math::Vector2 baseOffset = Math::Vector2::Zero;
 		Math::Vector2 velocity = Math::Vector2::Zero;
 		float angle = 0.0f;
 		float angularSpeed = 0.0f;
+		float baseAngle = 0.0f;
 	};
 
 	Math::Vector2 GetMouseSpritePos() const;
 	void UpdateDeathExplosion();
 	void DrawDeathExplosions();
 	void SetupDebris();
+	void AddDebrisForTexture(const std::shared_ptr<KdTexture>& tex, const Math::Vector2& drawSize, const Math::Vector2& originOffset, float baseAngle);
 	void DrawDebris();
 
 	std::shared_ptr<KdTexture> m_spTex = nullptr;
+	std::shared_ptr<KdTexture> m_spBaseTex = nullptr;
 	std::shared_ptr<KdTexture> m_spDeathExplosionTex = nullptr;
 	std::vector<DeathExplosion> m_deathExplosions;
 	std::vector<Debris> m_debris;
 
 	Math::Vector2 m_pos = Math::Vector2::Zero;
 	Math::Vector2 m_size = { 256.0f, 256.0f };
+	Math::Vector2 m_baseSize = { 300.0f, 300.0f };
+	Math::Vector2 m_baseOffset = { 0.0f, -34.0f };
 
 	float m_angle = 0.0f;
 	float m_angleOffset = DirectX::XMConvertToRadians(-90.0f);

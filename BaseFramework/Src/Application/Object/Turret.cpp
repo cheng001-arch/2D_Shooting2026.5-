@@ -12,6 +12,9 @@ void Turret::Init()
 	m_spTex = std::make_shared<KdTexture>();
 	m_spTex->Load("Asset/Textures/paotai3.png");
 
+	m_spBaseTex = std::make_shared<KdTexture>();
+	m_spBaseTex->Load("Asset/Textures/dizu.png");
+
 	m_spDeathExplosionTex = std::make_shared<KdTexture>();
 	m_spDeathExplosionTex->Load("Asset/Textures/baozha4.png");
 
@@ -20,6 +23,8 @@ void Turret::Init()
 
 void Turret::Update()
 {
+	if (m_deathStarted) { return; }
+
 	const Math::Vector2 mousePos = GetMouseSpritePos();
 	const Math::Vector2 toMouse = mousePos - m_pos;
 
@@ -30,7 +35,7 @@ void Turret::Update()
 
 void Turret::DrawSprite()
 {
-	if (!m_spTex) { return; }
+	if (!m_spTex || !m_spBaseTex) { return; }
 
 	UpdateDeathExplosion();
 	if (m_debrisStarted)
@@ -50,6 +55,18 @@ void Turret::DrawSprite()
 		drawPos.y += std::cos(m_damageShakeFrame * 4.0f) * m_damageShakePower * 0.5f * shakeRate;
 		m_damageShakeFrame = std::max(0.0f, m_damageShakeFrame - Application::Instance().GetDeltaTime());
 	}
+
+	Math::Matrix baseMat =
+		Math::Matrix::CreateRotationZ(shakeAngle) *
+		Math::Matrix::CreateTranslation(drawPos.x + m_baseOffset.x, drawPos.y + m_baseOffset.y, 0.0f);
+
+	KdShaderManager::Instance().m_spriteShader.SetMatrix(baseMat);
+	KdShaderManager::Instance().m_spriteShader.DrawTex(
+		m_spBaseTex.get(),
+		0,
+		0,
+		static_cast<int>(m_baseSize.x),
+		static_cast<int>(m_baseSize.y));
 
 	Math::Matrix mat =
 		Math::Matrix::CreateRotationZ(m_angle + shakeAngle) *
@@ -188,28 +205,38 @@ void Turret::DrawDeathExplosions()
 
 void Turret::SetupDebris()
 {
-	if (!m_spTex || !m_debris.empty()) { return; }
+	if (!m_spTex || !m_spBaseTex || !m_debris.empty()) { return; }
 
-	const int texW = static_cast<int>(m_spTex->GetWidth());
-	const int texH = static_cast<int>(m_spTex->GetHeight());
+	AddDebrisForTexture(m_spBaseTex, m_baseSize, m_baseOffset, 0.0f);
+	AddDebrisForTexture(m_spTex, m_size, Math::Vector2::Zero, m_angle);
+}
+
+void Turret::AddDebrisForTexture(const std::shared_ptr<KdTexture>& tex, const Math::Vector2& drawSize, const Math::Vector2& originOffset, float baseAngle)
+{
+	if (!tex) { return; }
+
+	const int texW = static_cast<int>(tex->GetWidth());
+	const int texH = static_cast<int>(tex->GetHeight());
 	if (texW <= 0 || texH <= 0) { return; }
 
 	const int cols = 3;
 	const int rows = 3;
 	const int pieceW = texW / cols;
 	const int pieceH = texH / rows;
-	const float scaleX = m_size.x / static_cast<float>(texW);
-	const float scaleY = m_size.y / static_cast<float>(texH);
+	const float scaleX = drawSize.x / static_cast<float>(texW);
+	const float scaleY = drawSize.y / static_cast<float>(texH);
 
 	for (int row = 0; row < rows; ++row)
 	{
 		for (int col = 0; col < cols; ++col)
 		{
 			Debris debris;
+			debris.tex = tex;
 			debris.srcRect = { col * pieceW, row * pieceH, pieceW, pieceH };
+			debris.drawSize = drawSize;
 			debris.baseOffset = {
-				(col * pieceW + pieceW * 0.5f - texW * 0.5f) * scaleX,
-				(row * pieceH + pieceH * 0.5f - texH * 0.5f) * scaleY
+				originOffset.x + (col * pieceW + pieceW * 0.5f - texW * 0.5f) * scaleX,
+				originOffset.y + (row * pieceH + pieceH * 0.5f - texH * 0.5f) * scaleY
 			};
 			debris.velocity = {
 				(col - 1.0f) * 2.4f,
@@ -217,6 +244,7 @@ void Turret::SetupDebris()
 			};
 			debris.angle = DirectX::XMConvertToRadians(static_cast<float>((row * cols + col) * 23));
 			debris.angularSpeed = DirectX::XMConvertToRadians(col % 2 == 0 ? -0.9f : 0.75f);
+			debris.baseAngle = baseAngle;
 			m_debris.push_back(debris);
 		}
 	}
@@ -224,20 +252,20 @@ void Turret::SetupDebris()
 
 void Turret::DrawDebris()
 {
-	if (!m_spTex) { return; }
-
-	const int texW = static_cast<int>(m_spTex->GetWidth());
-	const int texH = static_cast<int>(m_spTex->GetHeight());
-	if (texW <= 0 || texH <= 0) { return; }
-
-	const float scaleX = m_size.x / static_cast<float>(texW);
-	const float scaleY = m_size.y / static_cast<float>(texH);
 	const float breakFrame = std::max(0.0f, m_deathFrame - m_deathExplosionDuration);
 
 	for (const Debris& debris : m_debris)
 	{
+		if (!debris.tex) { continue; }
+
+		const int texW = static_cast<int>(debris.tex->GetWidth());
+		const int texH = static_cast<int>(debris.tex->GetHeight());
+		if (texW <= 0 || texH <= 0) { continue; }
+
+		const float scaleX = debris.drawSize.x / static_cast<float>(texW);
+		const float scaleY = debris.drawSize.y / static_cast<float>(texH);
 		const Math::Vector2 drawPos = m_pos + debris.baseOffset + debris.velocity * breakFrame;
-		const float angle = m_angle + debris.angle + debris.angularSpeed * breakFrame;
+		const float angle = debris.baseAngle + debris.angle + debris.angularSpeed * breakFrame;
 
 		Math::Matrix mat =
 			Math::Matrix::CreateRotationZ(angle) *
@@ -245,7 +273,7 @@ void Turret::DrawDebris()
 
 		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
 		KdShaderManager::Instance().m_spriteShader.DrawTex(
-			m_spTex.get(),
+			debris.tex.get(),
 			0,
 			0,
 			static_cast<int>(debris.srcRect.width * scaleX),

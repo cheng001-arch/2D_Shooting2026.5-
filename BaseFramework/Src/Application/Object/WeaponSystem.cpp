@@ -53,11 +53,21 @@ void WeaponSystem::Update()
 		projectileManager->Update();
 	}
 
+	const std::shared_ptr<Turret> turret = m_wpTurret.lock();
+	const std::shared_ptr<HeatRay> heatRay = m_wpHeatRay.lock();
+	if (!turret || turret->IsDestroyed())
+	{
+		if (heatRay)
+		{
+			heatRay->Update(false);
+		}
+		return;
+	}
+
 	const bool leftClick = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 	const bool trigger = leftClick && !m_prevLeftClick;
 	m_prevLeftClick = leftClick;
 
-	const std::shared_ptr<HeatRay> heatRay = m_wpHeatRay.lock();
 	if (m_waitLeftRelease)
 	{
 		if (heatRay)
@@ -79,8 +89,7 @@ void WeaponSystem::Update()
 
 	if (!leftClick) { return; }
 
-	const std::shared_ptr<Turret> turret = m_wpTurret.lock();
-	if (!turret || !projectileManager) { return; }
+	if (!projectileManager) { return; }
 
 	const Math::Vector2 muzzlePos = turret->GetMuzzlePos();
 	const Math::Vector2 direction = GetMouseSpritePos() - muzzlePos;
