@@ -37,6 +37,7 @@ private:
 	void SpawnHitEffect(const Math::Vector2& pos);
 	void UpdateHitEffects();
 	void DrawHitEffects();
+	void DrawChargeEffect();
 	bool IsEnemyOnRay(const Math::Vector2& enemyPos, float enemyRadius) const;
 
 	std::shared_ptr<KdTexture> m_spTex = nullptr;
@@ -70,6 +71,11 @@ private:
 	float m_particleSpacing = 36.0f;
 	float m_particleScroll = 0.0f;
 	float m_particleScrollSpeed = 42.0f;
+	float m_chargeSpinFrame = 0.0f;
+	float m_chargeSpinSpeed = 0.18f;
+	float m_chargeStartRadius = 74.0f;
+	float m_chargeEndRadius = 18.0f;
+	float m_chargeParticleSize = 34.0f;
 	float m_damageInterval = 6.0f;
 	float m_damagePower = 0.45f;
 	float m_hitEffectAnimFps = 25.0f;

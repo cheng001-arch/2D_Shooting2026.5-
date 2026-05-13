@@ -46,6 +46,7 @@ private:
 	void Release();
 	void ResetStageState();
 	void SyncCursorVisibility(bool visible);
+	void UpdateLookAheadOffset();
 
 	// ゲームウィンドウクラス
 	KdWindow		m_window;
@@ -75,6 +76,10 @@ private:
 	bool		m_isResultWaiting = false;
 	float		m_resultWaitFrame = 0.0f;
 	float		m_resultWaitDuration = 480.0f;
+	Math::Vector2 m_lookAheadOffset = Math::Vector2::Zero;
+	float		m_lookAheadMaxX = 28.0f;
+	float		m_lookAheadMaxY = 18.0f;
+	float		m_lookAheadLerp = 0.08f;
 
 //=====================================================
 // シングルトンパターン

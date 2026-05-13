@@ -49,7 +49,13 @@ public:
 	// 変換行列セット
 	void SetMatrix(const Math::Matrix& m)
 	{
-		m_cb0.Work().mTransform = m;
+		m_cb0.Work().mTransform = m * m_mViewOffset;
+	}
+
+	void SetViewOffsetMatrix(const Math::Matrix& m)
+	{
+		m_mViewOffset = m;
+		SetMatrix(Math::Matrix::Identity);
 	}
 
 	// 2D画像描画(Begin～End間で実行すると、処理効率が上がる)
@@ -162,4 +168,5 @@ private:
 
 	// 2D用正射影行列
 	Math::Matrix			m_mProj2D;
+	Math::Matrix			m_mViewOffset = Math::Matrix::Identity;
 };

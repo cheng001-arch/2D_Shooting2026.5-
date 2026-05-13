@@ -37,6 +37,7 @@ void HeatRay::Reset()
 	m_currentRayLength = 0.0f;
 	m_dissolveStartLength = 0.0f;
 	m_particleScroll = 0.0f;
+	m_chargeSpinFrame = 0.0f;
 	m_isFiring = false;
 	m_isOverheated = false;
 	m_isDissolving = false;
@@ -51,10 +52,12 @@ void HeatRay::Update(bool wantsFire)
 	if (canCharge)
 	{
 		m_fireChargeFrame = std::min(m_fireChargeInterval, m_fireChargeFrame + dt);
+		m_chargeSpinFrame += m_chargeSpinSpeed * dt;
 	}
 	else
 	{
 		m_fireChargeFrame = 0.0f;
+		m_chargeSpinFrame = 0.0f;
 	}
 
 	const bool canFire = canCharge && m_fireChargeFrame >= m_fireChargeInterval;
@@ -117,6 +120,7 @@ void HeatRay::DrawSprite()
 {
 	if ((!m_isFiring && !m_isDissolving) || !m_spTex)
 	{
+		DrawChargeEffect();
 		DrawHitEffects();
 		return;
 	}
@@ -142,6 +146,49 @@ void HeatRay::DrawSprite()
 
 	KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
 	DrawHitEffects();
+}
+
+void HeatRay::DrawChargeEffect()
+{
+	if (!m_spTex || m_isOverheated || m_fireChargeFrame <= 0.0f || m_isFiring)
+	{
+		return;
+	}
+
+	const float rate = std::clamp(m_fireChargeFrame / m_fireChargeInterval, 0.0f, 1.0f);
+	const float radius = m_chargeStartRadius + (m_chargeEndRadius - m_chargeStartRadius) * rate;
+	const float size = m_chargeParticleSize + 18.0f * rate;
+	const float forwardPulse = 12.0f + 10.0f * rate;
+	const Math::Vector2 center = m_muzzlePos + m_direction * forwardPulse;
+
+	const float baseAngle = static_cast<float>(std::atan2(m_direction.y, m_direction.x));
+	const int particleCount = 8;
+	for (int i = 0; i < particleCount; ++i)
+	{
+		const float t = static_cast<float>(i) / static_cast<float>(particleCount);
+		const float angle = baseAngle + DirectX::XMConvertToRadians(360.0f * t) + m_chargeSpinFrame;
+		const float wave = 0.75f + 0.25f * std::sin(m_chargeSpinFrame * 2.0f + static_cast<float>(i));
+		const Math::Vector2 offset = {
+			std::cos(angle) * radius * wave,
+			std::sin(angle) * radius * wave
+		};
+		const Math::Vector2 particlePos = center + offset;
+		const float particleAngle = angle + DirectX::XMConvertToRadians(-90.0f);
+
+		Math::Matrix mat =
+			Math::Matrix::CreateRotationZ(particleAngle) *
+			Math::Matrix::CreateTranslation(particlePos.x, particlePos.y, 0.0f);
+
+		KdShaderManager::Instance().m_spriteShader.SetMatrix(mat);
+		KdShaderManager::Instance().m_spriteShader.DrawTex(
+			m_spTex.get(),
+			0,
+			0,
+			static_cast<int>(size),
+			static_cast<int>(size));
+	}
+
+	KdShaderManager::Instance().m_spriteShader.SetMatrix(Math::Matrix::Identity);
 }
 
 void HeatRay::UpdateHeat(bool canFire)

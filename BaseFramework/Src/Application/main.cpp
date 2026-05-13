@@ -14,6 +14,8 @@
 #include "Application/Object/WeaponSystem.h"
 #include "Application/Scene/SceneManager.h"
 
+#include <algorithm>
+
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // エントリーポイント
 // アプリケーションはこの関数から進行する
@@ -95,9 +97,12 @@ void Application::Update()
 		}
 		if (!m_sceneManager->IsGameScene())
 		{
+			m_lookAheadOffset = Math::Vector2::Zero;
 			return;
 		}
 	}
+
+	UpdateLookAheadOffset();
 
 	if (m_sceneManager && !m_isResultWaiting)
 	{
@@ -288,6 +293,28 @@ void Application::SyncCursorVisibility(bool visible)
 	m_isCursorVisible = visible;
 }
 
+void Application::UpdateLookAheadOffset()
+{
+	POINT mousePos{};
+	GetCursorPos(&mousePos);
+	ScreenToClient(GetWindowHandle(), &mousePos);
+
+	RECT rect{};
+	GetClientRect(GetWindowHandle(), &rect);
+	const float clientW = static_cast<float>(rect.right - rect.left);
+	const float clientH = static_cast<float>(rect.bottom - rect.top);
+	if (clientW <= 0.0f || clientH <= 0.0f) { return; }
+
+	const float normalizedX = std::clamp((static_cast<float>(mousePos.x) - clientW * 0.5f) / (clientW * 0.5f), -1.0f, 1.0f);
+	const float normalizedY = std::clamp((clientH * 0.5f - static_cast<float>(mousePos.y)) / (clientH * 0.5f), -1.0f, 1.0f);
+	const Math::Vector2 target = {
+		-normalizedX * m_lookAheadMaxX,
+		-normalizedY * m_lookAheadMaxY
+	};
+
+	m_lookAheadOffset += (target - m_lookAheadOffset) * m_lookAheadLerp * Application::Instance().GetDeltaTime();
+}
+
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
 // アプリケーション更新の後処理
 // ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// ///// /////
@@ -391,10 +418,14 @@ void Application::DrawSprite()
 	{
 		if (m_sceneManager && !m_sceneManager->IsGameScene())
 		{
+			KdShaderManager::Instance().m_spriteShader.SetViewOffsetMatrix(Math::Matrix::Identity);
 			m_sceneManager->DrawSprite();
 			KdShaderManager::Instance().m_spriteShader.End();
 			return;
 		}
+
+		KdShaderManager::Instance().m_spriteShader.SetViewOffsetMatrix(
+			Math::Matrix::CreateTranslation(m_lookAheadOffset.x, m_lookAheadOffset.y, 0.0f));
 
 		if (m_backgroundTex)
 		{
@@ -402,8 +433,8 @@ void Application::DrawSprite()
 				m_backgroundTex.get(),
 				0,
 				0,
-				1280,
-				720);
+				1400,
+				800);
 		}
 
 		if (m_playerPlanet)
@@ -440,6 +471,8 @@ void Application::DrawSprite()
 		{
 			m_blackHole->DrawSprite();
 		}
+
+		KdShaderManager::Instance().m_spriteShader.SetViewOffsetMatrix(Math::Matrix::Identity);
 
 		if (m_uiManager)
 		{
