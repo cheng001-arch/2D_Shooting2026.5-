@@ -109,7 +109,7 @@ void Application::Update()
 		m_sceneManager->AddResultTime(Application::Instance().GetDeltaTime() / 60.0f);
 	}
 
-	if (m_playerPlanet && (GetAsyncKeyState('O') & 0x8000))
+	if (m_playerPlanet && (GetAsyncKeyState('W') & 0x8000))
 	{
 		m_playerPlanet->ResetHp();
 		if (m_turret)
