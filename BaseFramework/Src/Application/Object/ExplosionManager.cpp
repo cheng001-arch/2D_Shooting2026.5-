@@ -52,6 +52,10 @@ void ExplosionManager::DrawSprite()
 			tex = m_spPlanetHitTex;
 			row = m_planetHitRowIndex;
 		}
+		else if (explosion.type == ExplosionType::Stage8SpecialBurst)
+		{
+			row = m_stage8SpecialBurstRowIndex;
+		}
 		else if (explosion.type == ExplosionType::PlanetHitAccent)
 		{
 			tex = m_spPlanetHitAccentTex;
@@ -94,6 +98,15 @@ void ExplosionManager::SpawnLarge(const Math::Vector2& pos, float size)
 	explosion.pos = pos;
 	explosion.drawSize = { size, size };
 	explosion.type = ExplosionType::ProjectileHit;
+	m_explosions.push_back(explosion);
+}
+
+void ExplosionManager::SpawnStage8SpecialBurst(const Math::Vector2& pos)
+{
+	Explosion explosion;
+	explosion.pos = pos;
+	explosion.drawSize = { 700.0f, 700.0f };
+	explosion.type = ExplosionType::Stage8SpecialBurst;
 	m_explosions.push_back(explosion);
 }
 

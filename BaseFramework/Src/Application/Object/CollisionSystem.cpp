@@ -48,6 +48,13 @@ void CollisionSystem::HitProjectilesToEnemies(ProjectileManager& projectileManag
 				{
 					TriggerStage3CrystalBurst(*enemy, enemyManager, energySystem, explosionManager);
 				}
+				if (enemy->CanTriggerFullScreenSlowBurst())
+				{
+					constexpr float kSlowMultiplier = 0.25f;
+					constexpr float kSlowDurationFrame = 300.0f;
+					explosionManager.SpawnStage8SpecialBurst(enemy->GetPos2D());
+					enemyManager.SlowAllEnemies(enemy.get(), kSlowMultiplier, kSlowDurationFrame);
+				}
 			}
 			projectile.attackPower = 0;
 			break;
@@ -95,7 +102,17 @@ void CollisionSystem::TriggerStage3CrystalBurst(Enemy& crystalEnemy, EnemyManage
 
 		if (wasAlive && enemy->IsExpired())
 		{
-			explosionManager.Spawn(enemy->GetPos2D());
+			if (enemy->CanTriggerFullScreenSlowBurst())
+			{
+				constexpr float kSlowMultiplier = 0.25f;
+				constexpr float kSlowDurationFrame = 300.0f;
+				explosionManager.SpawnStage8SpecialBurst(enemy->GetPos2D());
+				enemyManager.SlowAllEnemies(enemy.get(), kSlowMultiplier, kSlowDurationFrame);
+			}
+			else
+			{
+				explosionManager.Spawn(enemy->GetPos2D());
+			}
 			Application::Instance().AddResultKill();
 			enemyManager.NotifyEnemyDefeated(*enemy);
 			energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));

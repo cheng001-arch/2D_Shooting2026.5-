@@ -158,6 +158,15 @@ void EnemyManager::NotifyEnemyCrashedIntoPlanet(const Enemy& enemy)
 	}
 }
 
+void EnemyManager::SlowAllEnemies(const Enemy* sourceEnemy, float multiplier, float durationFrame)
+{
+	for (const std::shared_ptr<Enemy>& enemy : m_enemies)
+	{
+		if (!enemy || enemy.get() == sourceEnemy || enemy->IsExpired()) { continue; }
+		enemy->ApplySlow(multiplier, durationFrame);
+	}
+}
+
 void EnemyManager::DrawSprite()
 {
 	for (const std::shared_ptr<Enemy>& enemy : m_enemies)
@@ -297,6 +306,7 @@ void EnemyManager::SetupEnemyByType(const std::shared_ptr<Enemy>& enemy, EnemyTy
 	const int attackBonus = GetStageAttackBonus();
 	enemy->SetStage3Crystal(type == EnemyType::Stage3Crystal);
 	enemy->SetStage4Crystal(type == EnemyType::Stage4Crystal);
+	enemy->SetStage8Special(type == EnemyType::Stage8Special);
 
 	switch (type)
 	{

@@ -12,9 +12,19 @@ void Enemy::Init()
 
 void Enemy::Update()
 {
+	const float dt = Application::Instance().GetDeltaTime();
+	if (m_slowFrame > 0.0f)
+	{
+		m_slowFrame = std::max(0.0f, m_slowFrame - dt);
+		if (m_slowFrame <= 0.0f)
+		{
+			m_slowMultiplier = 1.0f;
+		}
+	}
+
 	m_isGravityAttracted = false;
 	m_moveDir = { 0.0f, -1.0f };
-	m_pos.y -= m_fallSpeed * Application::Instance().GetDeltaTime();
+	m_pos.y -= m_fallSpeed * m_slowMultiplier * dt;
 	SetPos(m_pos);
 
 	if (m_pos.y < -500.0f)
@@ -25,6 +35,16 @@ void Enemy::Update()
 
 void Enemy::Update(const Math::Vector2& planetCenter, float planetRadius)
 {
+	const float dt = Application::Instance().GetDeltaTime();
+	if (m_slowFrame > 0.0f)
+	{
+		m_slowFrame = std::max(0.0f, m_slowFrame - dt);
+		if (m_slowFrame <= 0.0f)
+		{
+			m_slowMultiplier = 1.0f;
+		}
+	}
+
 	if (m_isBlackHoleCaptured)
 	{
 		m_isGravityAttracted = false;
@@ -32,7 +52,7 @@ void Enemy::Update(const Math::Vector2& planetCenter, float planetRadius)
 		{
 			m_blackHoleShrinkRate = std::max(
 				0.05f,
-				m_blackHoleShrinkRate - 0.03f * Application::Instance().GetDeltaTime());
+			m_blackHoleShrinkRate - 0.03f * dt);
 			m_size = m_baseSize * m_blackHoleShrinkRate;
 			m_radius = m_baseRadius * m_blackHoleShrinkRate;
 		}
@@ -44,7 +64,7 @@ void Enemy::Update(const Math::Vector2& planetCenter, float planetRadius)
 	{
 		m_isGravityAttracted = false;
 		const Math::Vector2 prevPos = m_pos;
-		m_cometT += m_cometPathSpeed * Application::Instance().GetDeltaTime();
+		m_cometT += m_cometPathSpeed * m_slowMultiplier * dt;
 		const float t = std::min(m_cometT, 1.0f);
 		const float invT = 1.0f - t;
 
@@ -76,18 +96,18 @@ void Enemy::Update(const Math::Vector2& planetCenter, float planetRadius)
 		gravityDir.Normalize();
 		m_isGravityAttracted = true;
 		m_moveDir = gravityDir;
-		m_gravityTrailFrame += (m_gravityTrailAnimFps / 60.0f) * Application::Instance().GetDeltaTime();
+		m_gravityTrailFrame += (m_gravityTrailAnimFps / 60.0f) * dt;
 		if (m_gravityTrailFrame >= static_cast<float>(m_gravityTrailFrameCount))
 		{
 			m_gravityTrailFrame = 0.0f;
 		}
-		m_pos += gravityDir * m_fallSpeed * Application::Instance().GetDeltaTime();
+		m_pos += gravityDir * m_fallSpeed * m_slowMultiplier * dt;
 	}
 	else
 	{
 		m_isGravityAttracted = false;
 		m_moveDir = { 0.0f, -1.0f };
-		m_pos.y -= m_fallSpeed * Application::Instance().GetDeltaTime();
+		m_pos.y -= m_fallSpeed * m_slowMultiplier * dt;
 	}
 
 	SetPos(m_pos);
@@ -167,6 +187,14 @@ void Enemy::SetStatus(float hp, int attackPower, int energyReward, float fallSpe
 	m_radius = radius;
 	m_baseRadius = radius;
 	m_blackHoleShrinkRate = 1.0f;
+	m_slowMultiplier = 1.0f;
+	m_slowFrame = 0.0f;
+}
+
+void Enemy::ApplySlow(float multiplier, float durationFrame)
+{
+	m_slowMultiplier = std::min(m_slowMultiplier, multiplier);
+	m_slowFrame = std::max(m_slowFrame, durationFrame);
 }
 
 void Enemy::SetBlackHoleCaptured(bool captured)

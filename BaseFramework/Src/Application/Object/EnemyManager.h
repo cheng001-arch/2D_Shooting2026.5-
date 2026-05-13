@@ -17,6 +17,7 @@ public:
 	std::vector<std::shared_ptr<Enemy>>& WorkEnemies() { return m_enemies; }
 	void NotifyEnemyDefeated(const Enemy& enemy);
 	void NotifyEnemyCrashedIntoPlanet(const Enemy& enemy);
+	void SlowAllEnemies(const Enemy* sourceEnemy, float multiplier, float durationFrame);
 
 private:
 	enum class EnemyType

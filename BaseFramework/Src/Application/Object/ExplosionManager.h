@@ -9,12 +9,14 @@ public:
 	void DrawSprite();
 	void Spawn(const Math::Vector2& pos);
 	void SpawnLarge(const Math::Vector2& pos, float size);
+	void SpawnStage8SpecialBurst(const Math::Vector2& pos);
 	void SpawnPlanetHit(const Math::Vector2& pos, float enemyRadius);
 
 private:
 	enum class ExplosionType
 	{
 		ProjectileHit,
+		Stage8SpecialBurst,
 		PlanetHit,
 		PlanetHitAccent
 	};
@@ -36,6 +38,7 @@ private:
 	int m_frameHeight = 64;
 	int m_frameCount = 9;
 	int m_projectileHitRowIndex = 4;
+	int m_stage8SpecialBurstRowIndex = 2;
 	int m_planetHitRowIndex = 7;
 	int m_planetHitAccentRowIndex = 0;
 	float m_animFps = 20.0f;

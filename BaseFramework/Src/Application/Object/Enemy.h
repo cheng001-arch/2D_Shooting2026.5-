@@ -21,6 +21,8 @@ public:
 	void SetBlackHoleCaptured(bool captured);
 	void SetStage3Crystal(bool isStage3Crystal) { m_isStage3Crystal = isStage3Crystal; }
 	void SetStage4Crystal(bool isStage4Crystal) { m_isStage4Crystal = isStage4Crystal; }
+	void SetStage8Special(bool isStage8Special) { m_isStage8Special = isStage8Special; }
+	void ApplySlow(float multiplier, float durationFrame);
 	void Damage(float attackPower);
 
 	Math::Vector2 GetPos2D() const { return m_pos; }
@@ -30,7 +32,9 @@ public:
 	bool IsComet() const { return m_isComet; }
 	bool IsStage3Crystal() const { return m_isStage3Crystal; }
 	bool IsStage4Crystal() const { return m_isStage4Crystal; }
+	bool IsStage8Special() const { return m_isStage8Special; }
 	bool CanTriggerFullScreenBurst() const { return m_isStage3Crystal || m_isStage4Crystal; }
+	bool CanTriggerFullScreenSlowBurst() const { return m_isStage8Special; }
 	bool IsBlackHoleCaptured() const { return m_isBlackHoleCaptured; }
 
 private:
@@ -53,6 +57,8 @@ private:
 	float m_baseRadius = 32.0f;
 	float m_hp = 1.0f;
 	float m_blackHoleShrinkRate = 1.0f;
+	float m_slowMultiplier = 1.0f;
+	float m_slowFrame = 0.0f;
 	float m_gravityTrailFrame = 0.0f;
 	float m_gravityTrailAnimFps = 20.0f;
 	int m_gravityTrailFrameWidth = 64;
@@ -64,6 +70,7 @@ private:
 	bool m_isComet = false;
 	bool m_isStage3Crystal = false;
 	bool m_isStage4Crystal = false;
+	bool m_isStage8Special = false;
 	bool m_isBlackHoleCaptured = false;
 	bool m_isGravityAttracted = false;
 };

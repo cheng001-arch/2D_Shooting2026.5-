@@ -210,13 +210,23 @@ void HeatRay::HitEnemies()
 
 			if (enemy->IsExpired())
 			{
-				explosionManager->Spawn(enemy->GetPos2D());
 				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+				if (!enemy->CanTriggerFullScreenSlowBurst())
+				{
+					explosionManager->Spawn(enemy->GetPos2D());
+				}
 				if (enemy->CanTriggerFullScreenBurst())
 				{
 					TriggerStage3CrystalBurst(*enemy, *enemyManager, *energySystem, *explosionManager);
+				}
+				if (enemy->CanTriggerFullScreenSlowBurst())
+				{
+					constexpr float kSlowMultiplier = 0.25f;
+					constexpr float kSlowDurationFrame = 300.0f;
+					explosionManager->SpawnStage8SpecialBurst(enemy->GetPos2D());
+					enemyManager->SlowAllEnemies(enemy.get(), kSlowMultiplier, kSlowDurationFrame);
 				}
 				m_damageTimers.erase(enemyKey);
 				continue;
@@ -237,13 +247,23 @@ void HeatRay::HitEnemies()
 
 			if (enemy->IsExpired())
 			{
-				explosionManager->Spawn(enemy->GetPos2D());
 				Application::Instance().AddResultKill();
 				enemyManager->NotifyEnemyDefeated(*enemy);
 				energySystem->AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
+				if (!enemy->CanTriggerFullScreenSlowBurst())
+				{
+					explosionManager->Spawn(enemy->GetPos2D());
+				}
 				if (enemy->CanTriggerFullScreenBurst())
 				{
 					TriggerStage3CrystalBurst(*enemy, *enemyManager, *energySystem, *explosionManager);
+				}
+				if (enemy->CanTriggerFullScreenSlowBurst())
+				{
+					constexpr float kSlowMultiplier = 0.25f;
+					constexpr float kSlowDurationFrame = 300.0f;
+					explosionManager->SpawnStage8SpecialBurst(enemy->GetPos2D());
+					enemyManager->SlowAllEnemies(enemy.get(), kSlowMultiplier, kSlowDurationFrame);
 				}
 				m_damageTimers.erase(enemyKey);
 				break;
@@ -269,7 +289,17 @@ void HeatRay::TriggerStage3CrystalBurst(Enemy& crystalEnemy, EnemyManager& enemy
 
 		if (wasAlive && enemy->IsExpired())
 		{
-			explosionManager.Spawn(enemy->GetPos2D());
+			if (enemy->CanTriggerFullScreenSlowBurst())
+			{
+				constexpr float kSlowMultiplier = 0.25f;
+				constexpr float kSlowDurationFrame = 300.0f;
+				explosionManager.SpawnStage8SpecialBurst(enemy->GetPos2D());
+				enemyManager.SlowAllEnemies(enemy.get(), kSlowMultiplier, kSlowDurationFrame);
+			}
+			else
+			{
+				explosionManager.Spawn(enemy->GetPos2D());
+			}
 			Application::Instance().AddResultKill();
 			enemyManager.NotifyEnemyDefeated(*enemy);
 			energySystem.AddEnergy(static_cast<float>(enemy->GetEnergyReward()));
